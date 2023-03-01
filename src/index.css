@@ -6,4 +6,5 @@
 
 body {
   font-family: 'Roboto', sans-serif;
+  @apply bg-black bg-opacity-5;
 }
