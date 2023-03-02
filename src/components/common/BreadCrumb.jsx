@@ -6,10 +6,8 @@ const BreadCrumb = ({ paths, currentPage }) => {
     <div className='flex items-center uppercase'>
       {paths.map((path, i) => {
         return (
-          <div className='text-grey text-sm '>
-            <Link to={path.to} key={i}>
-              {path.name}
-            </Link>
+          <div key={i} className='text-grey text-sm '>
+            <Link to={path.to}>{path.name}</Link>
             <span>&nbsp; / &nbsp;</span>
           </div>
         );

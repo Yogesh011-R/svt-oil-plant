@@ -8,3 +8,7 @@ body {
   font-family: 'Roboto', sans-serif;
   @apply bg-black bg-opacity-5;
 }
+
+.form .form-group input {
+  @apply bg-[#F0F0EF] p-4 py-3 rounded-md border border-black border-opacity-30 w-full;
+}

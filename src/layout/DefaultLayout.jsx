@@ -7,12 +7,16 @@ import Sidebar from '../components/Sidebar/Sidebar';
 const Dashboard = lazy(() => import('../pages/dashboard'));
 const Error404 = lazy(() => import('../pages/404'));
 const PurchaseSoudha = lazy(() => import('../pages/purchase-soudha'));
+const AddPurchaseSoudha = lazy(() =>
+  import('../pages/purchase-soudha/add-purchase-soudha')
+);
 const PurchaseConsignment = lazy(() =>
   import('../pages/purchase-soudha/purchase-consignment')
 );
 const PendingConsignment = lazy(() =>
   import('../pages/purchase-soudha/pending-consignment')
 );
+
 const Account = lazy(() => import('../pages/account'));
 
 const DefaultLayout = () => {
@@ -28,6 +32,10 @@ const DefaultLayout = () => {
               <Routes>
                 <Route path='/' element={<Dashboard />} />
                 <Route path='/purchase-soudha' element={<PurchaseSoudha />} />
+                <Route
+                  path='/purchase-soudha/add-purchase-soudha'
+                  element={<AddPurchaseSoudha />}
+                />
                 <Route
                   path='/purchase-consignment'
                   element={<PurchaseConsignment />}
