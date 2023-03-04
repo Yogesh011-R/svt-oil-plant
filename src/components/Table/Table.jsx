@@ -35,89 +35,91 @@ const Table = ({
   return (
     <div className='pb-8 w-full'>
       <div className=' '>
-        <div className=''>
-          <table
-            {...getTableProps()}
-            className='w-full align-middle px-10   min-w-[1094.09px] overflow-auto  '
-            style={{
-              borderRadius: '10px',
-              // borderSpacing: '0 2px',
-              // borderCollapse: 'separate',
-            }}
-          >
-            <thead className='bg-primary bg-opacity-40  h-16  '>
-              {headerGroups.map(headerGroup => (
-                <tr
-                  {...headerGroup.getHeaderGroupProps()}
-                  className='rounded-xl'
-                >
-                  {headerGroup.headers.map((column, idx) => {
-                    if (column.isSorted) {
-                      cSetSortBy(column.id);
-                      setDesc(column.isSortedDesc);
-                    }
-                    return (
-                      <th
-                        {...column.getHeaderProps(
-                          column.getSortByToggleProps()
-                        )}
-                      >
-                        <div>
-                          <span
-                            className={`capitalize px-6  text-black text-opacity-80  `}
-                          >
-                            {column.render('Header')}
-                          </span>
-                          {column.canSort && (
-                            <span>
-                              {column.isSorted ? (
-                                column.isSortedDesc ? (
-                                  <span className='ml-1'>▼</span>
-                                ) : (
-                                  <span className='ml-1'>▲</span>
-                                )
-                              ) : (
-                                ''
-                              )}
-                            </span>
-                          )}
-                        </div>
-                      </th>
-                    );
-                  })}
-                </tr>
-              ))}
-            </thead>
-
-            <tbody {...getTableBodyProps()}>
-              {page.map(row => {
-                prepareRow(row);
-
-                return (
+        <div>
+          <div>
+            <table
+              {...getTableProps()}
+              className='w-full align-middle px-10    '
+              style={{
+                borderRadius: '10px',
+                // borderSpacing: '0 2px',
+                // borderCollapse: 'separate',
+              }}
+            >
+              <thead className='bg-primary bg-opacity-40  h-16  '>
+                {headerGroups.map(headerGroup => (
                   <tr
-                    {...row.getRowProps()}
-                    className='relative table-row w-full dark:bg-opacity-50 bg-white-950  dark:bg-darkPrimary-800  dark:border-gray-800  '
-                    style={{
-                      height: '62px',
-                      borderBottom: '0.5px solid rgba(0, 0, 0, 0.4)',
-                    }}
+                    {...headerGroup.getHeaderGroupProps()}
+                    className='rounded-xl'
                   >
-                    {row.cells.map(cell => {
+                    {headerGroup.headers.map((column, idx) => {
+                      if (column.isSorted) {
+                        cSetSortBy(column.id);
+                        setDesc(column.isSortedDesc);
+                      }
                       return (
-                        <td
-                          {...cell.getCellProps()}
-                          id={cell?.column?.id}
-                          className='text-center text-sm'
+                        <th
+                          {...column.getHeaderProps(
+                            column.getSortByToggleProps()
+                          )}
                         >
-                          {cell.render('Cell')}
-                        </td>
+                          <div>
+                            <span
+                              className={`capitalize px-6  text-center   text-black text-opacity-80  `}
+                            >
+                              {column.render('Header')}
+                            </span>
+                            {column.canSort && (
+                              <span>
+                                {column.isSorted ? (
+                                  column.isSortedDesc ? (
+                                    <span className='ml-1'>▼</span>
+                                  ) : (
+                                    <span className='ml-1'>▲</span>
+                                  )
+                                ) : (
+                                  ''
+                                )}
+                              </span>
+                            )}
+                          </div>
+                        </th>
                       );
                     })}
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                ))}
+              </thead>
+
+              <tbody {...getTableBodyProps()}>
+                {page.map(row => {
+                  prepareRow(row);
+
+                  return (
+                    <tr
+                      {...row.getRowProps()}
+                      className='relative table-row w-full dark:bg-opacity-50 bg-white-950  dark:bg-darkPrimary-800  dark:border-gray-800 '
+                      style={{
+                        height: '62px',
+                        borderBottom: '0.5px solid rgba(0, 0, 0, 0.4)',
+                      }}
+                    >
+                      {row.cells.map(cell => {
+                        return (
+                          <td
+                            {...cell.getCellProps()}
+                            id={cell?.column?.id}
+                            className='text-center text-sm'
+                          >
+                            {cell.render('Cell')}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
 
           {/* extras */}
           <div className='my-8 mt-10 px-6 flex items-center justify-between'>

@@ -6,9 +6,30 @@
 
 body {
   font-family: 'Roboto', sans-serif;
-  @apply bg-black bg-opacity-5;
+  @apply bg-black bg-opacity-5 overflow-x-hidden;
 }
-
+input {
+  @apply focus:outline-none;
+}
 .form .form-group input {
   @apply bg-[#F0F0EF] p-4 py-3 rounded-md border border-black border-opacity-30 w-full;
+}
+.form .auth-form-group input {
+  @apply bg-white p-3 py-3 rounded-md border border-black border-opacity-30 w-full placeholder:text-black placeholder:text-opacity-70 placeholder:tracking-[0.5px];
+}
+
+/* TEST */
+select:focus {
+  outline: none;
+}
+.input-wrap {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
+.select-wrap {
+  position: relative;
+  appearance: none;
+  outline: 0;
+  box-shadow: none;
+  border: 0 !important;
+  color: rgba(0, 0, 0, 0.5);
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { HiPencil } from 'react-icons/hi';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
@@ -6,6 +6,7 @@ import AddBtn from '../../components/common/AddBtn';
 import BreadCrumb from '../../components/common/BreadCrumb';
 import ExportBtn from '../../components/common/ExportBtn';
 import SelectEntries from '../../components/common/SelectEntries';
+import TableHeader from '../../components/common/TableHeader';
 import TableSearch from '../../components/common/TableSearch';
 import TableInstance from '../../components/Table/TableInstance';
 
@@ -116,8 +117,17 @@ const PurchaseSoudha = () => {
           </div>
         );
       },
+      disableSortBy: true,
     },
   ];
+  const [cSortBy, cSetSortBy] = useState();
+  const [desc, setDesc] = useState(true);
+
+  // Headers
+
+  const [searchValue, setSearchValue] = useState('');
+  const [entriesValue, setEntriesValue] = useState(10);
+
   return (
     <div>
       <BreadCrumb
@@ -125,37 +135,26 @@ const PurchaseSoudha = () => {
         currentPage='New Purchase soudha'
       />
       <section className='bg-white my-8 rounded-[10px]'>
-        <div className='p-[18px] border-b'>
-          <h1 className='text-xl font-medium'>All Purchase Soudha Partners</h1>
-        </div>
-        <div className='px-[18px] py-8'>
-          <div className='flex items-center justify-between'>
-            <div className='flex space-x-5 items-center'>
-              <h2>Export</h2>
-              <div className='flex space-x-3 items-center'>
-                <ExportBtn text='PDF' />
-                <ExportBtn text='CVS' />
-                <ExportBtn text='EXCEL' />
-              </div>
-            </div>
-            <div>
-              <AddBtn text='Add new Partner' link='add-purchase-soudha' />
-            </div>
-          </div>
-          <div className='my-5 flex items-center justify-between'>
-            <div className='flex space-x-7 items-center'>
-              <h2>Show</h2>
-              <SelectEntries />
-            </div>
-            <TableSearch />
-          </div>
-        </div>
+        <TableHeader
+          title='All Purchase Soudha Partnerst'
+          searchValue={searchValue}
+          setSearchValue={setSearchValue}
+          entriesValue={entriesValue}
+          setEntriesValue={setEntriesValue}
+          addLink='add-purchase-partner'
+          btnText='Add new Partner'
+        />
+
         <div>
           <TableInstance
+            cSortBy={cSortBy}
+            cSetSortBy={cSetSortBy}
+            desc={desc}
+            setDesc={setDesc}
             tableData={[
               {
-                id: 1,
-                name: 'Apples',
+                id: '123anil',
+                name: 'Anil Kumar',
                 location: 'Bangalore',
                 whatsappNo: '1234567890',
                 totalQuantityInKg: 100,
@@ -164,8 +163,8 @@ const PurchaseSoudha = () => {
                 soudhaStatus: false,
               },
               {
-                id: 2,
-                name: 'Bananas',
+                id: '456arun',
+                name: 'Arun',
                 location: 'Mumbai',
                 whatsappNo: '0987654321',
                 totalQuantityInKg: 50,
@@ -174,8 +173,8 @@ const PurchaseSoudha = () => {
                 soudhaStatus: true,
               },
               {
-                id: 3,
-                name: 'Oranges',
+                id: '789kumar ',
+                name: 'Kumar',
                 location: 'Delhi',
                 whatsappNo: '9876543210',
                 totalQuantityInKg: 75,

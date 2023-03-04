@@ -9,11 +9,17 @@ const options = [
   { id: 3, value: '30' },
   { id: 4, value: '50' },
 ];
-const SelectEntries = () => {
+const SelectEntries = ({ setEntriesValue }) => {
   const [selected, setSelected] = useState(options[0]);
 
   return (
-    <Listbox value={selected} onChange={setSelected}>
+    <Listbox
+      value={selected}
+      onChange={e => {
+        setSelected(e);
+        setEntriesValue(e.value);
+      }}
+    >
       {({ open }) => (
         <div className='flex items-center space-x-2'>
           <div className='relative mt-1 w-[60px]'>

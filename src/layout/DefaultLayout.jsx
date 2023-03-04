@@ -6,16 +6,24 @@ import Sidebar from '../components/Sidebar/Sidebar';
 // @Lazy import
 const Dashboard = lazy(() => import('../pages/dashboard'));
 const Error404 = lazy(() => import('../pages/404'));
-const PurchaseSoudha = lazy(() => import('../pages/purchase-soudha'));
+const AllPurchasePartner = lazy(() => import('../pages/all-purchase-partner'));
 const AddPurchaseSoudha = lazy(() =>
-  import('../pages/purchase-soudha/add-purchase-soudha')
+  import('../pages/all-purchase-partner/add-purchase-partner')
 );
 const PurchaseConsignment = lazy(() =>
-  import('../pages/purchase-soudha/purchase-consignment')
+  import('../pages/all-purchase-partner/purchase-consignment')
 );
-const PendingConsignment = lazy(() =>
-  import('../pages/purchase-soudha/pending-consignment')
+const AddPurchaseConsignment = lazy(() =>
+  import(
+    '../pages/all-purchase-partner/purchase-consignment/add-purchase-consignment'
+  )
 );
+const ReceivedConsignment = lazy(() =>
+  import(
+    '../pages/all-purchase-partner/purchase-consignment/received-consignment'
+  )
+);
+const PendingConsignment = lazy(() => import('../pages/pending-consignment'));
 
 const Account = lazy(() => import('../pages/account'));
 
@@ -27,18 +35,29 @@ const DefaultLayout = () => {
 
         <div className='flex-1'>
           <Header />
-          <main className='py-5 px-6'>
+          <main className='py-5 px-6 max-w-[1680px]'>
             <Suspense fallback={<div>Loading...</div>}>
               <Routes>
                 <Route path='/' element={<Dashboard />} />
-                <Route path='/purchase-soudha' element={<PurchaseSoudha />} />
                 <Route
-                  path='/purchase-soudha/add-purchase-soudha'
+                  path='/all-purchase-partner'
+                  element={<AllPurchasePartner />}
+                />
+                <Route
+                  path='/all-purchase-partner/add-purchase-partner'
                   element={<AddPurchaseSoudha />}
                 />
                 <Route
-                  path='/purchase-consignment'
+                  path='/all-purchase-partner/:partnerId'
                   element={<PurchaseConsignment />}
+                />
+                <Route
+                  path='/all-purchase-partner/:partnerId/add-consignment'
+                  element={<AddPurchaseConsignment />}
+                />
+                <Route
+                  path='/all-purchase-partner/:partnerId/:consignmentId'
+                  element={<ReceivedConsignment />}
                 />
                 <Route
                   path='/pending-consignment'

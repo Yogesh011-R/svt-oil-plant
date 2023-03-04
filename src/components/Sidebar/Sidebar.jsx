@@ -54,12 +54,11 @@ const sidebarOptions = [
       </svg>
     ),
     name: 'Purchase soudha',
-    link: '/purchase-soudha',
     subMenu: [
       {
         id: 1,
         name: 'All Purchase Consignment',
-        link: '/purchase-consignment',
+        link: '/all-purchase-partner',
       },
       {
         id: 2,
@@ -67,7 +66,7 @@ const sidebarOptions = [
         link: '/pending-consignment',
       },
     ],
-    links: ['/pending-consignment', '/purchase-consignment'],
+    links: ['/pending-consignment', '/all-purchase-partner'],
   },
   {
     id: 3,
@@ -95,6 +94,10 @@ const sidebarOptions = [
 
 const Sidebar = () => {
   const location = useLocation().pathname;
+  console.log(
+    '🚀 ~ file: Sidebar.jsx:98 ~ Sidebar ~ location:',
+    location.split('/')[1]
+  );
 
   const container = useRef(null);
 
@@ -102,8 +105,8 @@ const Sidebar = () => {
   const [isOpened, setIsOpened] = useState(false);
 
   return (
-    <aside className='w-[271.73px] bg-primary h-screen'>
-      <div className='py-4 px-8 border-b border-white border-opacity-40'>
+    <aside className='w-[271.73px] bg-primary sticky top-0 h-screen'>
+      <div className='py-4 px-8 border-b border-white  border-opacity-40'>
         <Link to='/' className='text-white text-3xl font-[800]'>
           LOGO
         </Link>
@@ -116,18 +119,14 @@ const Sidebar = () => {
             <React.Fragment key={id}>
               <li
                 className={`${
-                  link === location || links?.includes(location)
+                  link === location ||
+                  links?.includes(location) ||
+                  links?.includes(`/${location.split('/')[1]}`)
                     ? 'bg-secondary'
                     : ''
                 } p-3.5 border-b flex justify-between border-white border-opacity-40`}
               >
-                <Link to={link} className='flex flex-1 items-center '>
-                  <div className='flex  items-center space-x-3.5'>
-                    {Icon}{' '}
-                    <span className='text-white font-medium'>{name}</span>
-                  </div>
-                </Link>
-                {subMenu && (
+                {subMenu ? (
                   <button
                     onClick={() => {
                       setIsOpened(prev => !prev);
@@ -137,9 +136,23 @@ const Sidebar = () => {
                           : '0px'
                       );
                     }}
+                    className='flex flex-1 items-center justify-between'
                   >
-                    <HiChevronDown className='text-white text-2xl' />
+                    <div className='flex  items-center w-full flex-1 space-x-3.5'>
+                      {Icon}{' '}
+                      <span className='text-white font-medium'>{name}</span>
+                    </div>
+                    <div className='justify-self-end'>
+                      <HiChevronDown className='text-white text-2xl ' />
+                    </div>
                   </button>
+                ) : (
+                  <Link to={link} className='flex flex-1 items-center '>
+                    <div className='flex  items-center space-x-3.5'>
+                      {Icon}{' '}
+                      <span className='text-white font-medium'>{name}</span>
+                    </div>
+                  </Link>
                 )}
               </li>
               {subMenu && (
@@ -154,7 +167,10 @@ const Sidebar = () => {
                       <li
                         key={id}
                         className={`${
-                          link === location ? 'bg-secondary' : ''
+                          link === location ||
+                          link === `/${location.split('/')[1]}`
+                            ? 'bg-secondary'
+                            : ''
                         } p-3.5 border-b border-white border-opacity-40`}
                       >
                         <Link
