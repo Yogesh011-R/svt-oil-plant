@@ -33,3 +33,64 @@ select:focus {
   border: 0 !important;
   color: rgba(0, 0, 0, 0.5);
 }
+
+input:focus {
+  outline: none;
+}
+select:focus {
+  outline: none;
+}
+.input-wrap {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
+.select-wrap {
+  position: relative;
+  appearance: none;
+  outline: 0;
+  box-shadow: none;
+  border: 0 !important;
+  color: rgba(0, 0, 0, 0.5);
+}
+input,
+select {
+  background-color: transparent;
+}
+input[type='file'] {
+  color: transparent !important;
+  outline: none;
+}
+input::file-selector-button {
+  background-color: transparent;
+  border: none;
+  color: #ffffff;
+  display: none;
+}
+::-webkit-datetime-edit-text {
+  opacity: 0;
+}
+
+input[type='date'] {
+  position: relative;
+  padding: 10px;
+}
+
+input[type='date']::-webkit-calendar-picker-indicator {
+  color: transparent;
+  background: none;
+  z-index: 1;
+}
+
+input[type='date']:before {
+  color: transparent;
+  background: none;
+  display: block;
+  font-family: 'FontAwesome';
+  content: '\f107';
+  font-weight: 900;
+  width: 15px;
+  height: 20px;
+  position: absolute;
+  top: 12px;
+  right: 6px;
+  color: #00000080;
+}

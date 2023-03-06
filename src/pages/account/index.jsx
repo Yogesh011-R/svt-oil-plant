@@ -17,11 +17,13 @@ const Account = () => {
       accessor: 'photo',
       Cell: ({ row }) => {
         return (
-          <img
-            src={row.original.photo}
-            alt=''
-            className='w-11 h-11 rounded-full'
-          />
+          <div className='mx-auto flex justify-center'>
+            <img
+              src={row.original.photo}
+              alt=''
+              className='w-11 h-11 rounded-full'
+            />
+          </div>
         );
       },
     },
@@ -109,7 +111,7 @@ const Account = () => {
           setSearchValue={setSearchValue}
           entriesValue={entriesValue}
           setEntriesValue={setEntriesValue}
-          addLink='Add New User'
+          addLink='add-user'
           btnText='Add New User'
         />
         <div>

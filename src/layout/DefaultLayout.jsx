@@ -4,8 +4,9 @@ import Header from '../components/Header/Header';
 import Sidebar from '../components/Sidebar/Sidebar';
 
 // @Lazy import
+// Home
 const Dashboard = lazy(() => import('../pages/dashboard'));
-const Error404 = lazy(() => import('../pages/404'));
+// AllConsignments
 const AllPurchasePartner = lazy(() => import('../pages/all-purchase-partner'));
 const AddPurchaseSoudha = lazy(() =>
   import('../pages/all-purchase-partner/add-purchase-partner')
@@ -23,9 +24,18 @@ const ReceivedConsignment = lazy(() =>
     '../pages/all-purchase-partner/purchase-consignment/received-consignment'
   )
 );
+const AddReceivedSoudha = lazy(() =>
+  import(
+    '../pages/all-purchase-partner/purchase-consignment/received-consignment/add-received-soudha'
+  )
+);
+// PendingConsignment
 const PendingConsignment = lazy(() => import('../pages/pending-consignment'));
-
+// Accounts
 const Account = lazy(() => import('../pages/account'));
+const AddUser = lazy(() => import('../pages/account/add-user'));
+// 404
+const Error404 = lazy(() => import('../pages/404'));
 
 const DefaultLayout = () => {
   return (
@@ -60,10 +70,15 @@ const DefaultLayout = () => {
                   element={<ReceivedConsignment />}
                 />
                 <Route
+                  path='/all-purchase-partner/:partnerId/:consignmentId/add-received-soudha'
+                  element={<AddReceivedSoudha />}
+                />
+                <Route
                   path='/pending-consignment'
                   element={<PendingConsignment />}
                 />
                 <Route path='/account' element={<Account />} />
+                <Route path='/account/add-user' element={<AddUser />} />
                 <Route path='/404' element={<Error404 />} />
                 <Route
                   path='*'

@@ -73,9 +73,9 @@ const Table = ({
                               <span>
                                 {column.isSorted ? (
                                   column.isSortedDesc ? (
-                                    <span className='ml-1'>▼</span>
+                                    <span className=' text-sm'>▼</span>
                                   ) : (
-                                    <span className='ml-1'>▲</span>
+                                    <span className=' text-sm'>▲</span>
                                   )
                                 ) : (
                                   ''
