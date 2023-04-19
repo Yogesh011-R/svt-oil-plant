@@ -9,7 +9,7 @@ const CustomSelect = ({ label, type, placeholder, options, ...props }) => {
   const { values, setFieldValue, setTouched } = useFormikContext();
 
   return (
-    <div>
+    <div className='mb-5'>
       <label className='block mb-2'>{label}</label>
       <Select
         {...field}
@@ -30,7 +30,6 @@ const CustomSelect = ({ label, type, placeholder, options, ...props }) => {
         styles={{
           control: styles => ({
             ...styles,
-            borderRadius: 0,
             border: '1px solid rgba(0, 0, 0, 0.3)',
             boxShadow: 'none',
             fontSize: '14px',

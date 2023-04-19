@@ -10,6 +10,19 @@ import TableHeader from '../../../components/common/TableHeader';
 import TableSearch from '../../../components/common/TableSearch';
 import TotalDetails from '../../../components/common/TotalDetails';
 import TableInstance from '../../../components/Table/TableInstance';
+import { useQuery } from 'react-query';
+import axios from 'axios';
+import { SERVER_URL } from '../../../utils/config';
+import { format } from 'date-fns';
+
+const getSoudhaByPartners = async ({ queryKey }) => {
+  const [_, partnerId] = queryKey;
+  const res = await axios.get(
+    `${SERVER_URL}/soudha/byPartner/${partnerId}/1/10`
+  );
+
+  return res.data;
+};
 
 const PurchaseSoudha = () => {
   const TABLE_COLUMNS = [
@@ -24,7 +37,7 @@ const PurchaseSoudha = () => {
 
     {
       Header: 'Quantity in kg',
-      accessor: 'quantityInKg',
+      accessor: 'quantity',
     },
     {
       Header: 'Rate',
@@ -37,7 +50,12 @@ const PurchaseSoudha = () => {
       Header: 'Difference amount',
       accessor: 'differenceAmount',
       Cell: ({ row }) => {
-        return <span>₹{row.original.differenceAmount}</span>;
+        return (
+          <span>
+            {row.original.differenceAmount &&
+              '₹' + row.original.differenceAmount}
+          </span>
+        );
       },
     },
     {
@@ -63,6 +81,13 @@ const PurchaseSoudha = () => {
     {
       Header: 'Booking date',
       accessor: 'bookingDate',
+      Cell: ({ row }) => {
+        return (
+          <div>
+            <p>{format(new Date(row.original.bookingDate), 'MM/dd/yyyy')}</p>
+          </div>
+        );
+      },
     },
     {
       Header: 'Created by',
@@ -119,10 +144,51 @@ const PurchaseSoudha = () => {
   const [cSortBy, cSetSortBy] = useState();
   const [desc, setDesc] = useState(true);
 
-  let { partnerId } = useParams();
+  const { partnerId } = useParams();
 
   const [searchValue, setSearchValue] = useState('');
   const [entriesValue, setEntriesValue] = useState(10);
+
+  const { data, isLoading, isError, error } = useQuery(
+    ['getSoudhaByPartners', partnerId],
+    getSoudhaByPartners
+  );
+
+  let component = null;
+
+  if (error) {
+    component = (
+      <p className='mt-6 ml-4 pb-10 text-center'>
+        An error has occurred: {error.message}
+      </p>
+    );
+  } else if (isLoading) {
+    component = <p className='mt-6 ml-4 pb-10 text-center'>Loading...</p>;
+  } else if (!data.soudhaViewDatas.length) {
+    component = (
+      <div className='py-20 flex flex-col items-center justify-center'>
+        <p className=' text-center mb-5'>No Booking added yet!</p>
+        <div>
+          <AddBtn text='Add new booking' link='add-consignment' />
+        </div>
+      </div>
+    );
+  } else {
+    component = (
+      <TableInstance
+        cSortBy={cSortBy}
+        cSetSortBy={cSetSortBy}
+        desc={desc}
+        setDesc={setDesc}
+        tableData={data?.soudhaViewDatas}
+        columnName={TABLE_COLUMNS}
+      />
+    );
+  }
+
+  if (isLoading) {
+    return <p className=' py-10 text-center'>Loading..</p>;
+  }
 
   return (
     <div>
@@ -136,17 +202,23 @@ const PurchaseSoudha = () => {
       <section className='bg-white my-8 rounded-[10px]'>
         <TableHeader
           title='Booked Purchase consignment'
+          detailsData={data.soudhaViewDatas}
           searchValue={searchValue}
           setSearchValue={setSearchValue}
           entriesValue={entriesValue}
           setEntriesValue={setEntriesValue}
-          partnerDetails={partnerId}
+          partnerDetails={{
+            id: data?.partnerViewData.id,
+            name: data?.partnerViewData.firstName,
+            location: data?.partnerViewData.location,
+            whatsApp: data?.partnerViewData.whatsApp,
+          }}
           whatsApp={true}
           btnText='Add new booking'
           addLink='add-consignment'
         />
         <div>
-          <TableInstance
+          {/* <TableInstance
             cSortBy={cSortBy}
             cSetSortBy={cSetSortBy}
             desc={desc}
@@ -188,30 +260,34 @@ const PurchaseSoudha = () => {
               },
             ]}
             columnName={TABLE_COLUMNS}
-          />
+          /> */}
+          {component}
         </div>
       </section>
       <TotalDetails
         totalInfo={[
           {
             id: 1,
-            name: 'Total kgs',
-            value: '130000',
+            name: 'Total',
+            value:
+              data?.soudhaDetails?.totalQuantity +
+              ' ' +
+              data?.soudhaDetails?.measure,
           },
           {
             id: 2,
             name: 'Average rate',
-            value: '₹961.87',
+            value: '₹' + data?.soudhaDetails?.averageRate,
           },
           {
             id: 3,
             name: 'Total difference amount',
-            value: '₹50000',
+            value: '₹' + data?.soudhaDetails?.totalDifferenceAmount,
           },
           {
             id: 4,
             name: 'Total pending consignment',
-            value: '10000',
+            value: data?.soudhaDetails?.totalPendingConsignent,
           },
         ]}
       />

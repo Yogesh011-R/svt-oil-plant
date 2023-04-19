@@ -6,7 +6,19 @@ import BreadCrumb from '../../../../components/common/BreadCrumb';
 import TableHeader from '../../../../components/common/TableHeader';
 import TotalDetails from '../../../../components/common/TotalDetails';
 import TableInstance from '../../../../components/Table/TableInstance';
+import axios from 'axios';
+import { SERVER_URL } from '../../../../utils/config';
+import { useQuery } from 'react-query';
+import AddBtn from '../../../../components/common/AddBtn';
 
+const getPartSoudha = async ({ queryKey }) => {
+  const [_, soudhaId, size] = queryKey;
+  const res = await axios.get(
+    `${SERVER_URL}/part-soudha/bySoudha/${soudhaId}/1/${size}`
+  );
+
+  return res.data;
+};
 const ReceivedConsignment = () => {
   const TABLE_COLUMNS = [
     {
@@ -93,13 +105,60 @@ const ReceivedConsignment = () => {
       disableSortBy: true,
     },
   ];
-  let { partnerId, consignmentId } = useParams();
+  let { consignmentId: soudhaId, partnerId } = useParams();
+  console.log(
+    '🚀 ~ file: index.jsx:108 ~ ReceivedConsignment ~ useParams():',
+    useParams()
+  );
 
   const [cSortBy, cSetSortBy] = useState();
   const [desc, setDesc] = useState(true);
 
   const [searchValue, setSearchValue] = useState('');
   const [entriesValue, setEntriesValue] = useState(10);
+
+  const { data, isLoading, isError, error } = useQuery(
+    ['getPartSoudha', soudhaId, entriesValue],
+    getPartSoudha
+  );
+
+  let component = null;
+
+  if (error) {
+    component = (
+      <p className='mt-6 ml-4 pb-10 text-center'>
+        An error has occurred: {error.message}
+      </p>
+    );
+  } else if (isLoading) {
+    component = <p className='mt-6 ml-4 pb-10 text-center'>Loading...</p>;
+  } else if (!data.partSoudhaViewDatas.length) {
+    component = (
+      <div className='py-20 flex flex-col items-center justify-center'>
+        <p className=' text-center mb-5'>
+          No Received consignment details added yet!
+        </p>
+        <div>
+          <AddBtn text='Add new received Soudha' link='add-received-soudha' />
+        </div>
+      </div>
+    );
+  } else {
+    component = (
+      <TableInstance
+        cSortBy={cSortBy}
+        cSetSortBy={cSetSortBy}
+        desc={desc}
+        setDesc={setDesc}
+        tableData={data?.partSoudhaViewDatas}
+        columnName={TABLE_COLUMNS}
+      />
+    );
+  }
+
+  if (isLoading) {
+    return <p className=' py-10 text-center'>Loading..</p>;
+  }
   return (
     <div>
       <BreadCrumb
@@ -116,18 +175,24 @@ const ReceivedConsignment = () => {
       />
       <section className='bg-white my-8 rounded-[10px]'>
         <TableHeader
-          title='Recieved consignment  details:'
+          title='Received consignment  details:'
           searchValue={searchValue}
           setSearchValue={setSearchValue}
           entriesValue={entriesValue}
           setEntriesValue={setEntriesValue}
-          partnerDetails={partnerId}
+          partnerDetails={{
+            id: data?.partnerViewData.id,
+            name: data?.partnerViewData.firstName,
+            location: data?.partnerViewData.location,
+            whatsApp: data?.partnerViewData.whatsApp,
+          }}
+          detailsData={data.partSoudhaViewDatas}
           whatsApp={true}
           btnText='Add new received Soudha '
           addLink='add-received-soudha'
         />
         <div>
-          <TableInstance
+          {/* <TableInstance
             cSortBy={cSortBy}
             cSetSortBy={cSetSortBy}
             desc={desc}
@@ -177,7 +242,8 @@ const ReceivedConsignment = () => {
               },
             ]}
             columnName={TABLE_COLUMNS}
-          />
+          /> */}
+          {component}
         </div>
       </section>
       <TotalDetails

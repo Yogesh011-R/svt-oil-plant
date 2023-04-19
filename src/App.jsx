@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AuthLayout from './layout/AuthLayout';
 import DefaultLayout from './layout/DefaultLayout';
 import PrivateRoute from './PrivateRoute';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 // @Lazy import
 const Login = lazy(() => import('./pages/auth/login'));
@@ -10,10 +11,11 @@ const ForgotPassword = lazy(() => import('./pages/auth/forgot-password'));
 const VerifyOtp = lazy(() => import('./pages/auth/verify-otp'));
 
 function App() {
+  const queryClient = new QueryClient();
   return (
-    <div>
+    <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div className='text-center'>Loading...</div>}>
           <Routes>
             {/* /auth */}
             <Route path='auth' element={<AuthLayout />}>
@@ -38,7 +40,7 @@ function App() {
           </Routes>
         </Suspense>
       </BrowserRouter>
-    </div>
+    </QueryClientProvider>
   );
 }
 

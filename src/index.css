@@ -12,12 +12,15 @@ input {
   @apply focus:outline-none;
 }
 .form .form-group input {
-  @apply bg-[#F0F0EF] p-4 py-3 rounded-md border border-black border-opacity-30 w-full;
+  @apply bg-[#F0F0EF] p-4 py-3 rounded-md border border-black border-opacity-30 w-full placeholder:!text-sm;
 }
 .form .auth-form-group input {
-  @apply bg-white p-3 py-3 rounded-md border border-black border-opacity-30 w-full placeholder:text-black placeholder:text-opacity-70 placeholder:tracking-[0.5px];
+  @apply bg-white p-3 py-3 rounded-md border border-black border-opacity-30 w-full placeholder:text-black placeholder:text-opacity-70 placeholder:tracking-[0.5px] placeholder:!text-sm;
 }
 
+button:disabled {
+  @apply !opacity-60 !cursor-not-allowed;
+}
 /* TEST */
 select:focus {
   outline: none;

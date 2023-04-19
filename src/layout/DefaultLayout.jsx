@@ -11,6 +11,9 @@ const AllPurchasePartner = lazy(() => import('../pages/all-purchase-partner'));
 const AddPurchaseSoudha = lazy(() =>
   import('../pages/all-purchase-partner/add-purchase-partner')
 );
+const EditPurchaseConsignment = lazy(() =>
+  import('../pages/all-purchase-partner/edit-purchase-partner')
+);
 const PurchaseConsignment = lazy(() =>
   import('../pages/all-purchase-partner/purchase-consignment')
 );
@@ -46,7 +49,7 @@ const DefaultLayout = () => {
         <div className='flex-1'>
           <Header />
           <main className='py-5 px-6 max-w-[1680px]'>
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<div className='text-center'>Loading...</div>}>
               <Routes>
                 <Route path='/' element={<Dashboard />} />
                 <Route
@@ -56,6 +59,10 @@ const DefaultLayout = () => {
                 <Route
                   path='/all-purchase-partner/add-purchase-partner'
                   element={<AddPurchaseSoudha />}
+                />
+                <Route
+                  path='/all-purchase-partner/edit-purchase-partner'
+                  element={<EditPurchaseConsignment />}
                 />
                 <Route
                   path='/all-purchase-partner/:partnerId'
