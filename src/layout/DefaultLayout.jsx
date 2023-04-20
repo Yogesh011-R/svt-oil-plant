@@ -2,6 +2,10 @@ import React, { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import Header from '../components/Header/Header';
 import Sidebar from '../components/Sidebar/Sidebar';
+import { useQuery } from 'react-query';
+import { logoutUser, setCurrentUser } from '../redux/features/authSlice';
+import { useDispatch } from 'react-redux';
+import { SERVER_URL } from '../utils/config';
 
 // @Lazy import
 // Home
@@ -40,7 +44,28 @@ const AddUser = lazy(() => import('../pages/account/add-user'));
 // 404
 const Error404 = lazy(() => import('../pages/404'));
 
+// const getUser = async ({ queryKey }) => {
+//   const res = await axios.get(`${SERVER_URL}/users/getDetails`);
+//   return res.data;
+// };
+
 const DefaultLayout = () => {
+  const dispatch = useDispatch();
+
+  // const { data, isLoading, isError, error } = useQuery(
+  //   [`currentUser`, user],
+  //   getUser,
+  //   {
+  //     onSuccess: user => {
+  //       if (!user.isActive) {
+  //         return dispatch(logoutUser());
+  //       }
+
+  //       dispatch(setCurrentUser(user));
+  //     },
+  //     refetchInterval: 150000, // 2.5 min
+  //   }
+  // );
   return (
     <>
       <div className='flex '>

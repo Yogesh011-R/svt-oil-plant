@@ -9,6 +9,7 @@ const AuthInput = ({ label, type, placeholder, Icon, ...props }) => {
       <input
         {...field}
         {...props}
+        type={type}
         className={`${Icon && '!pr-12'}`}
         placeholder={placeholder}
       />
