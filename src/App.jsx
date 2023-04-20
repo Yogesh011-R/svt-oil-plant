@@ -9,6 +9,7 @@ import store from './redux/app/store';
 import { ToastContainer, Flip } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Toast from './components/Toast/Toast';
+import { SERVER_URL } from './utils/config';
 
 // @Lazy import
 const Login = lazy(() => import('./pages/auth/login'));
@@ -45,6 +46,7 @@ axios.interceptors.response.use(
       isFirst &&
       error?.response?.status === 401 &&
       !originalRequest.url.includes('login') &&
+      !originalRequest.url.includes('verify-otp') &&
       !originalRequest.url.includes('reset-password') &&
       !originalRequest._retry
     ) {
@@ -52,7 +54,7 @@ axios.interceptors.response.use(
 
       // try to get a new access_token
       return axios
-        .post(`${config.server_url}/auth/refresh-tokens`, {
+        .post(`${SERVER_URL}/auth/refresh-tokens`, {
           refreshToken: store.getState().auth.refreshToken,
         })
         .then(response => {

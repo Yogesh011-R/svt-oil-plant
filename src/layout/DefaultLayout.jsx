@@ -4,8 +4,9 @@ import Header from '../components/Header/Header';
 import Sidebar from '../components/Sidebar/Sidebar';
 import { useQuery } from 'react-query';
 import { logoutUser, setCurrentUser } from '../redux/features/authSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { SERVER_URL } from '../utils/config';
+import Modal from '../components/Modal/Modal';
 
 // @Lazy import
 // Home
@@ -66,6 +67,7 @@ const DefaultLayout = () => {
   //     refetchInterval: 150000, // 2.5 min
   //   }
   // );
+  const modal = useSelector(state => state.modal);
   return (
     <>
       <div className='flex '>
@@ -73,7 +75,7 @@ const DefaultLayout = () => {
 
         <div className='flex-1'>
           <Header />
-          <main className='py-5 px-6 max-w-[1680px]'>
+          <main className='py-5 px-6 max-w-[1680px] mx-auto'>
             <Suspense fallback={<div className='text-center'>Loading...</div>}>
               <Routes>
                 <Route path='/' element={<Dashboard />} />
@@ -120,6 +122,7 @@ const DefaultLayout = () => {
             </Suspense>
           </main>
         </div>
+        {modal.modalType !== null && <Modal {...modal} />}
       </div>
     </>
   );
