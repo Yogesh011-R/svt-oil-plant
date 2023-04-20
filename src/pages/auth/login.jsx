@@ -18,8 +18,8 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const initialValues = {
-    name: 'admin',
-    password: 'password@',
+    name: '',
+    password: '',
   };
 
   const validationSchema = Yup.object({
@@ -100,6 +100,11 @@ const Login = () => {
           <h2 className='text-xl text-black text-opacity-60 text-center'>
             Login to Dashboard
           </h2>
+          <div className='text-center mt-2'>
+            <h2 className='mb-2'>Test Account:</h2>
+            <h3>Name: admin</h3>
+            <h3>Password: password@1</h3>
+          </div>
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
