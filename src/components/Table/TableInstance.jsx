@@ -85,30 +85,20 @@ const TableInstance = ({
     //   : ''
   );
 
-  if (tableData.length <= 0) {
-    component = (
-      <p className='mt-16 text-center'>
-        {!q
-          ? 'Oops, no data found.'
-          : 'Oops, No data found for the Search Query'}
-      </p>
-    );
-  } else {
-    component = (
-      <Table
-        {...tableInstance}
-        setPageIndex={setPageIndex}
-        cSetPageSize={cSetPageSize}
-        cSetSortBy={cSetSortBy}
-        setDesc={setDesc}
-        totalResults={totalResults}
-        q={q}
-        key={'test'}
-        setSelectedRows={setSelectedRows}
-        setQ={setQ}
-      />
-    );
-  }
+  component = (
+    <Table
+      {...tableInstance}
+      setPageIndex={setPageIndex}
+      cSetPageSize={cSetPageSize}
+      cSetSortBy={cSetSortBy}
+      setDesc={setDesc}
+      totalResults={totalResults}
+      q={q}
+      key={'test'}
+      setSelectedRows={setSelectedRows}
+      setQ={setQ}
+    />
+  );
   return <>{component}</>;
 };
 

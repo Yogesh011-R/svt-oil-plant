@@ -12,14 +12,21 @@ import TableInstance from '../../components/Table/TableInstance';
 import { useQuery } from 'react-query';
 import axios from 'axios';
 import { SERVER_URL } from '../../utils/config';
+import { DELETE_MODAL } from '../../utils/constant';
+import { useDispatch } from 'react-redux';
+import { showModal } from '../../redux/features/modalSlice';
 
 const getAllPartners = async () => {
-  const res = await axios.get(`${SERVER_URL}/partner`);
+  const res = await axios.get(
+    `${SERVER_URL}/soudha/partners?page=1&limit=10&sortBy=createdAt:desc`
+  );
 
   return res.data;
 };
 
 const PurchaseSoudha = () => {
+  const dispatch = useDispatch();
+
   const TABLE_COLUMNS = [
     {
       Header: 'ID',
@@ -27,7 +34,7 @@ const PurchaseSoudha = () => {
     },
     {
       Header: 'Name',
-      accessor: 'firstName',
+      accessor: 'partnerName',
     },
 
     {
@@ -36,7 +43,7 @@ const PurchaseSoudha = () => {
     },
     {
       Header: 'Whatsapp number',
-      accessor: 'whatsApp',
+      accessor: 'whatsappNo',
     },
     {
       Header: 'Total quantity in kg',
@@ -46,7 +53,13 @@ const PurchaseSoudha = () => {
       Header: 'Average rate',
       accessor: 'averageRate',
       Cell: ({ row }) => {
-        return <span>₹{row.original.averageRate}</span>;
+        console.log('🚀 ~ file: index.jsx:52 ~ PurchaseSoudha ~ row:', row);
+
+        return (
+          <span>
+            {row.original.averageRate && '₹' + row.original.averageRate}
+          </span>
+        );
       },
     },
     {
@@ -56,7 +69,7 @@ const PurchaseSoudha = () => {
         return (
           <div>
             <Link
-              to={`${row.original.id}`}
+              to={`${row.original.partnerId}`}
               className='bg-secondary py-2.5 px-5 rounded-md text-white text-[11px]'
             >
               View
@@ -71,7 +84,7 @@ const PurchaseSoudha = () => {
       Cell: ({ row }) => {
         return (
           <div>
-            {row.original.status === 'ACTIVE' ? (
+            {row.original.status === 'active' ? (
               <div className='bg-green text-green  bg-opacity-20  w-fit px-5 p-1 rounded-full text-[11px] mx-auto'>
                 Active
               </div>
@@ -118,6 +131,18 @@ const PurchaseSoudha = () => {
               <HiPencil />
             </Link>
             <button
+              onClick={() => {
+                dispatch(
+                  showModal({
+                    modalType: DELETE_MODAL,
+                    modalProps: {
+                      id: row.original.id,
+                      route: 'soudha/partner',
+                      invalidateKey: 'getAllPartners',
+                    },
+                  })
+                );
+              }}
               type='button'
               title='Delete'
               className='bg-red  p-1.5  text-xl text-white rounded'
@@ -153,6 +178,15 @@ const PurchaseSoudha = () => {
     );
   } else if (isLoading) {
     component = <p className='mt-6 ml-4 pb-10 text-center'>Loading...</p>;
+  } else if (!isLoading && !data?.partners?.results.length) {
+    component = (
+      <div className='py-20 flex flex-col items-center justify-center'>
+        <p className=' text-center mb-5'>No Booking added yet!</p>
+        <div>
+          <AddBtn link='add-purchase-partner' text='Add new Partner' />
+        </div>
+      </div>
+    );
   } else {
     component = (
       <TableInstance
@@ -160,39 +194,7 @@ const PurchaseSoudha = () => {
         cSetSortBy={cSetSortBy}
         desc={desc}
         setDesc={setDesc}
-        // tableData={[
-        //   {
-        //     id: '123anil',
-        //     name: 'Anil Kumar',
-        //     location: 'Bangalore',
-        //     whatsappNo: '1234567890',
-        //     totalQuantityInKg: 100,
-        //     averageRate: '50.5',
-        //     partnerStatus: true,
-        //     soudhaStatus: false,
-        //   },
-        //   {
-        //     id: '456arun',
-        //     name: 'Arun',
-        //     location: 'Mumbai',
-        //     whatsappNo: '0987654321',
-        //     totalQuantityInKg: 50,
-        //     averageRate: 30.25,
-        //     partnerStatus: false,
-        //     soudhaStatus: true,
-        //   },
-        //   {
-        //     id: '789kumar ',
-        //     name: 'Kumar',
-        //     location: 'Delhi',
-        //     whatsappNo: '9876543210',
-        //     totalQuantityInKg: 75,
-        //     averageRate: 40.75,
-        //     partnerStatus: true,
-        //     soudhaStatus: true,
-        //   },
-        // ]}
-        tableData={data?.partnerViewDatas}
+        tableData={data?.partners?.results}
         columnName={TABLE_COLUMNS}
       />
     );
@@ -210,7 +212,7 @@ const PurchaseSoudha = () => {
           searchValue={searchValue}
           setSearchValue={setSearchValue}
           entriesValue={entriesValue}
-          detailsData={data?.partnerViewDatas}
+          detailsData={data?.partners?.results}
           setEntriesValue={setEntriesValue}
           addLink='add-purchase-partner'
           btnText='Add new Partner'
@@ -222,38 +224,7 @@ const PurchaseSoudha = () => {
             cSetSortBy={cSetSortBy}
             desc={desc}
             setDesc={setDesc}
-            tableData={[
-              {
-                id: '123anil',
-                name: 'Anil Kumar',
-                location: 'Bangalore',
-                whatsappNo: '1234567890',
-                totalQuantityInKg: 100,
-                averageRate: '50.5',
-                partnerStatus: true,
-                soudhaStatus: false,
-              },
-              {
-                id: '456arun',
-                name: 'Arun',
-                location: 'Mumbai',
-                whatsappNo: '0987654321',
-                totalQuantityInKg: 50,
-                averageRate: 30.25,
-                partnerStatus: false,
-                soudhaStatus: true,
-              },
-              {
-                id: '789kumar ',
-                name: 'Kumar',
-                location: 'Delhi',
-                whatsappNo: '9876543210',
-                totalQuantityInKg: 75,
-                averageRate: 40.75,
-                partnerStatus: true,
-                soudhaStatus: true,
-              },
-            ]}
+            tableData={data.partners}
             columnName={TABLE_COLUMNS}
           /> */}
           {component}

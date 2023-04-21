@@ -13,7 +13,7 @@ import { useMutation } from 'react-query';
 import PurchasePartnerForm from '../../components/common/FormComponents/PurchasePartnerForm';
 
 const addPartner = async data => {
-  const res = await axios.post(`${SERVER_URL}/partner/addPartner`, data);
+  const res = await axios.post(`${SERVER_URL}/soudha/partner`, data);
   return res.data;
 };
 

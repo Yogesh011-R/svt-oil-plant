@@ -6,14 +6,12 @@ import { Link, Navigate, useLocation } from 'react-router-dom';
 import BreadCrumb from '../../components/common/BreadCrumb';
 import SubmitBtn from '../../components/common/Form/SubmitBtn';
 import Input from '../../components/common/Form/Input';
-import CustomSelect from '../../components/common/Form/CustomSelect';
 import axios from 'axios';
 import { SERVER_URL } from '../../utils/config';
-import { useMutation } from 'react-query';
 import PurchasePartnerForm from '../../components/common/FormComponents/PurchasePartnerForm';
 
 const addPartner = async data => {
-  const res = await axios.post(`${SERVER_URL}/partner/addPartner`, data);
+  const res = await axios.patch(`${SERVER_URL}/soudha/partner`, data);
   return res.data;
 };
 
@@ -21,7 +19,7 @@ const EditPurchaseConsignment = () => {
   const { state } = useLocation();
 
   if (!state) {
-    return <Navigate replace to='/all-purchase-partner' s />;
+    return <Navigate replace to='/all-purchase-partner' />;
   }
 
   return (

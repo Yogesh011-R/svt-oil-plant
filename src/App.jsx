@@ -10,6 +10,7 @@ import { ToastContainer, Flip } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Toast from './components/Toast/Toast';
 import { SERVER_URL } from './utils/config';
+import { loginUser, logoutUser } from './redux/features/authSlice';
 
 // @Lazy import
 const Login = lazy(() => import('./pages/auth/login'));
@@ -59,6 +60,7 @@ axios.interceptors.response.use(
         })
         .then(response => {
           // get the accessToken
+
           const accessToken = response.data.access.token;
           const refreshToken = response.data.refresh.token;
 
@@ -74,8 +76,6 @@ axios.interceptors.response.use(
           return axios(originalRequest);
         })
         .catch(error => {
-          console.log('🚀 ~ file: App.jsx ~ line 109 ~ error', error);
-
           if (error?.response?.status === 401) {
             store.dispatch(logoutUser());
           }

@@ -3,17 +3,27 @@ import React from 'react';
 import Select, { components } from 'react-select';
 import ErrorBox from './ErrorBox';
 
-const CustomSelect = ({ label, type, placeholder, options, ...props }) => {
+const CustomSelect = ({
+  label,
+  type,
+  placeholder,
+  options,
+  disabled,
+  ...props
+}) => {
   const [field, meta] = useField({ ...props, type });
 
   const { values, setFieldValue, setTouched } = useFormikContext();
 
   return (
-    <div className='mb-5'>
-      <label className='block mb-2'>{label}</label>
+    <div className='form-group mb-5'>
+      <label className={`${disabled && 'opacity-60'} text-sm block mb-2 text`}>
+        {label}
+      </label>
       <Select
         {...field}
         {...props}
+        isDisabled={disabled}
         options={options}
         onChange={value => {
           setFieldValue(field.name, value.value);
@@ -28,7 +38,7 @@ const CustomSelect = ({ label, type, placeholder, options, ...props }) => {
         placeholder={placeholder}
         components={{ IndicatorSeparator: null }}
         styles={{
-          control: styles => ({
+          control: (styles, { data, isDisabled, isFocused, isSelected }) => ({
             ...styles,
             border: '1px solid rgba(0, 0, 0, 0.3)',
             boxShadow: 'none',
@@ -39,6 +49,7 @@ const CustomSelect = ({ label, type, placeholder, options, ...props }) => {
             fontWeight: '500',
             cursor: 'pointer',
             background: '#F0F0EF',
+            opacity: isDisabled && '0.7',
             '&:hover': {
               border: '1px solid rgba(0, 0, 0, 0.3)',
             },

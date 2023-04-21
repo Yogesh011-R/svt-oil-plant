@@ -46,9 +46,6 @@ const Header = () => {
                     dispatch(
                       showModal({
                         modalType: LOGOUT_MODAL,
-                        modalProps: {
-                          test: 'test',
-                        },
                       })
                     );
                   }}

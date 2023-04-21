@@ -12,7 +12,7 @@ input {
   @apply focus:outline-none;
 }
 .form .form-group input {
-  @apply bg-[#F0F0EF] p-4 py-3 rounded-md border border-black border-opacity-30 w-full placeholder:!text-sm;
+  @apply bg-[#F0F0EF] p-4 py-3 rounded-md border disabled:opacity-60 disabled:cursor-not-allowed border-black border-opacity-30 w-full placeholder:!text-sm;
 }
 .form .auth-form-group input {
   @apply bg-white p-3 py-3 rounded-md border border-black border-opacity-30 w-full placeholder:text-black placeholder:text-opacity-70 placeholder:tracking-[0.5px] placeholder:!text-sm;
