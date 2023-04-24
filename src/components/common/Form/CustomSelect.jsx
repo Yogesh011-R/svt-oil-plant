@@ -29,10 +29,11 @@ const CustomSelect = ({
           setFieldValue(field.name, value.value);
         }}
         value={
-          values?.status && {
+          values[field.name] && {
             label:
-              values.status.charAt(0).toUpperCase() + values.status.slice(1),
-            value: values.status,
+              values[field.name].charAt(0).toUpperCase() +
+              values[field.name].slice(1),
+            value: values[field.name],
           }
         }
         placeholder={placeholder}

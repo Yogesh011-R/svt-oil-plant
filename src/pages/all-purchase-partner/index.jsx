@@ -54,14 +54,30 @@ const PurchaseSoudha = () => {
     {
       Header: 'Total quantity in kg',
       accessor: 'totalQuantity',
+      Cell: ({ row }) => {
+        return (
+          <span>
+            {' '}
+            {row?.original?.totalInfo?.totalBookQuantity
+              ? row?.original?.totalInfo?.totalBookQuantity
+              : '-'}
+          </span>
+        );
+      },
     },
     {
       Header: 'Average rate',
       accessor: 'averageRate',
       Cell: ({ row }) => {
+        // const averageRate = data.totalInfo.filter(
+        //   item => item.id === row.original.id
+        // )[0]?.totalInfo?.averageRate;
+
         return (
           <span>
-            {row.original.averageRate && '₹' + row.original.averageRate}
+            {row?.original?.totalInfo?.averageRate
+              ? '₹' + row?.original?.totalInfo?.averageRate
+              : '-'}
           </span>
         );
       },
@@ -167,8 +183,27 @@ const PurchaseSoudha = () => {
 
   const { data, isLoading, isError, error } = useQuery(
     ['getAllPartners', entriesValue, pageIndex],
-    getAllPartners
+    getAllPartners,
+    {
+      select: data => {
+        const newResult = data.partners.results.map((item, idx) => {
+          console.log(
+            '🚀 ~ file: index.jsx:191 ~ newResult ~ data.totalInfo[idx].totalInfo:',
+            data.totalInfo.filter(info => info.id === item.id)[0]?.totalInfo
+          );
+          return {
+            ...item,
+            totalInfo: data.totalInfo.filter(info => info.id === item.id)[0]
+              ?.totalInfo,
+          };
+        });
+
+        return { partners: { ...data.partners, results: newResult } };
+      },
+    }
   );
+
+  console.log('🚀 ~ file: index.jsx:175 ~ PurchaseSoudha ~ data:', data);
 
   let component = null;
 

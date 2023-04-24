@@ -14,7 +14,9 @@ import { useQuery } from 'react-query';
 import axios from 'axios';
 import { SERVER_URL } from '../../../utils/config';
 import { format } from 'date-fns';
-import { entriesOption } from '../../../utils/constant';
+import { DELETE_MODAL, entriesOption } from '../../../utils/constant';
+import { showModal } from '../../../redux/features/modalSlice';
+import { useDispatch } from 'react-redux';
 
 const getBookedConsignments = async ({ queryKey }) => {
   const [_, partnerId, page, limit] = queryKey;
@@ -28,6 +30,7 @@ const getBookedConsignments = async ({ queryKey }) => {
 };
 
 const PurchaseSoudha = () => {
+  const dispatch = useDispatch();
   const TABLE_COLUMNS = [
     {
       Header: 'ID',
@@ -54,14 +57,14 @@ const PurchaseSoudha = () => {
     },
     {
       Header: 'Difference amount',
-      accessor: 'advancePayment',
-      Cell: ({ row }) => {
-        return (
-          <span>
-            {row.original.advancePayment && '₹' + row.original.advancePayment}
-          </span>
-        );
-      },
+      accessor: 'difference',
+      // Cell: ({ row }) => {
+      //   return (
+      //     <span>
+      //       {row.original.advancePayment && '₹' + row.original.advancePayment}
+      //     </span>
+      //   );
+      // },
     },
     {
       Header: 'Pending consignment',
@@ -126,14 +129,28 @@ const PurchaseSoudha = () => {
       Cell: ({ row }) => {
         return (
           <div className='flex space-x-3 justify-center'>
-            <button
+            <Link
+              state={row.original}
+              to='edit-consignment'
               type='button'
               title='Edit'
               className='bg-primary p-1.5  text-xl text-white rounded'
             >
               <HiPencil />
-            </button>
+            </Link>
             <button
+              onClick={() => {
+                dispatch(
+                  showModal({
+                    modalType: DELETE_MODAL,
+                    modalProps: {
+                      id: row.original.id,
+                      route: 'soudha/consignment',
+                      invalidateKey: 'getBookedConsignments',
+                    },
+                  })
+                );
+              }}
               type='button'
               title='Delete'
               className='bg-red  p-1.5  text-xl text-white rounded'
@@ -170,7 +187,7 @@ const PurchaseSoudha = () => {
     );
   } else if (isLoading) {
     component = <p className='mt-6 ml-4 pb-10 text-center'>Loading...</p>;
-  } else if (!data.partner.consignments.length) {
+  } else if (!data.consignments.results.length) {
     component = (
       <div className='py-20 flex flex-col items-center justify-center'>
         <p className=' text-center mb-5'>No Booking added yet!</p>
@@ -284,33 +301,32 @@ const PurchaseSoudha = () => {
           {component}
         </div>
       </section>
-      {/* <TotalDetails
-        totalInfo={[
-          {
-            id: 1,
-            name: 'Total',
-            value:
-              data?.soudhaDetails?.totalQuantity +
-              ' ' +
-              data?.soudhaDetails?.measure,
-          },
-          {
-            id: 2,
-            name: 'Average rate',
-            value: '₹' + data?.soudhaDetails?.averageRate,
-          },
-          {
-            id: 3,
-            name: 'Total difference amount',
-            value: '₹' + data?.soudhaDetails?.totalDifferenceAmount,
-          },
-          {
-            id: 4,
-            name: 'Total pending consignment',
-            value: data?.soudhaDetails?.totalPendingConsignent,
-          },
-        ]}
-      /> */}
+      {data?.totalInfo && (
+        <TotalDetails
+          totalInfo={[
+            {
+              id: 1,
+              name: 'Total kgs',
+              value: data?.totalInfo?.totalBookQuantity,
+            },
+            {
+              id: 2,
+              name: 'Average rate',
+              value: '₹' + data?.totalInfo?.averageRate,
+            },
+            // {
+            //   id: 3,
+            //   name: 'Total difference amount',
+            //   value: '₹' + data?.soudhaDetails?.totalDifferenceAmount,
+            // },
+            // {
+            //   id: 4,
+            //   name: 'Total pending consignment',
+            //   value: data?.soudhaDetails?.totalPendingConsignent,
+            // },
+          ]}
+        />
+      )}
     </div>
   );
 };

@@ -16,7 +16,7 @@ const AllPurchasePartner = lazy(() => import('../pages/all-purchase-partner'));
 const AddPurchaseSoudha = lazy(() =>
   import('../pages/all-purchase-partner/add-purchase-partner')
 );
-const EditPurchaseConsignment = lazy(() =>
+const EditPurchasePartner = lazy(() =>
   import('../pages/all-purchase-partner/edit-purchase-partner')
 );
 const PurchaseConsignment = lazy(() =>
@@ -25,6 +25,11 @@ const PurchaseConsignment = lazy(() =>
 const AddPurchaseConsignment = lazy(() =>
   import(
     '../pages/all-purchase-partner/purchase-consignment/add-purchase-consignment'
+  )
+);
+const EditPurchaseConsignment = lazy(() =>
+  import(
+    '../pages/all-purchase-partner/purchase-consignment/edit-purchase-consignment'
   )
 );
 const ReceivedConsignment = lazy(() =>
@@ -89,7 +94,7 @@ const DefaultLayout = () => {
                 />
                 <Route
                   path='/all-purchase-partner/edit-purchase-partner'
-                  element={<EditPurchaseConsignment />}
+                  element={<EditPurchasePartner />}
                 />
                 <Route
                   path='/all-purchase-partner/:partnerId'
@@ -98,6 +103,10 @@ const DefaultLayout = () => {
                 <Route
                   path='/all-purchase-partner/:partnerId/add-consignment'
                   element={<AddPurchaseConsignment />}
+                />
+                <Route
+                  path='/all-purchase-partner/:partnerId/edit-consignment'
+                  element={<EditPurchaseConsignment />}
                 />
                 <Route
                   path='/all-purchase-partner/:partnerId/:consignmentId'
