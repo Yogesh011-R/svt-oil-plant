@@ -8,18 +8,25 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import SubmitBtn from '../../../components/common/Form/SubmitBtn';
 import CustomSelect from '../../../components/common/Form/CustomSelect';
 import DatePicker from '../../../components/common/Form/DatePicker';
-import { useMutation } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import axios from 'axios';
 import { SERVER_URL } from '../../../utils/config';
+import { addToast } from '../../../redux/features/toastSlice';
+import { handleError } from '../../../utils/helper';
+import { ERROR, SUCCESS } from '../../../utils/constant';
+import { useDispatch } from 'react-redux';
 
 const addBookings = async data => {
-  const res = await axios.post(`${SERVER_URL}/soudha/saveSoudha`, data);
+  const res = await axios.post(`${SERVER_URL}/soudha/consignment`, data);
   return res.data;
 };
 
 const AddPurchaseConsignment = () => {
   const navigate = useNavigate();
   const { partnerId } = useParams();
+  const dispatch = useDispatch();
+
+  const queryClient = useQueryClient();
 
   const [oilTypes, setOilTypes] = useState([
     { id: 1, label: 'EDIBLE OIL', value: 'EDIBLEOIL' },
@@ -30,13 +37,11 @@ const AddPurchaseConsignment = () => {
 
   const [showAddNewOil, setShowAddNewOil] = useState(false);
   const initialValues = {
-    partnerViewData: {
-      id: partnerId,
-    },
+    partnerId,
     bookingDate: new Date(),
     oilType: '',
     newOilType: '',
-    quantity: '',
+    bookedQuantity: '',
     rate: '',
 
     // advancePayment: '',
@@ -47,7 +52,7 @@ const AddPurchaseConsignment = () => {
     ),
     oilType: Yup.string().required('Oil Type is required'),
     newOilType: Yup.string(),
-    quantity: Yup.string().required('Booked Quantity is required'),
+    bookedQuantity: Yup.string().required('Booked quantity is required'),
     rate: Yup.string().required('Rate is required'),
     // advancePayment: Yup.string(),
   });
@@ -56,6 +61,23 @@ const AddPurchaseConsignment = () => {
     mutationFn: addBookings,
     onSuccess: () => {
       navigate(`/all-purchase-partner/${partnerId}`);
+      dispatch(
+        addToast({
+          kind: SUCCESS,
+          msg: 'Consignment  added successfully',
+        })
+      );
+      queryClient.invalidateQueries('getBookedConsignments');
+    },
+    onError: error => {
+      const message = handleError(error);
+
+      dispatch(
+        addToast({
+          kind: ERROR,
+          msg: message,
+        })
+      );
     },
   });
 
@@ -78,7 +100,6 @@ const AddPurchaseConsignment = () => {
                 return setFieldError('newOilType', 'NewOilType is required');
               }
               delete values.newOilType;
-              values.status = 'CREATED';
               mutate(values);
             }}
           >
@@ -228,10 +249,10 @@ const AddPurchaseConsignment = () => {
 
                   <div className='max-w-[360px] w-full'>
                     <Input
-                      label='Booked Quantity in kg*'
-                      name='quantity'
-                      id='quantity'
-                      placeholder='Enter Booked quantity'
+                      label='Booked bookedQuantity in kg*'
+                      name='bookedQuantity'
+                      id='bookedQuantity'
+                      placeholder='Enter Booked bookedQuantity'
                     />
                   </div>
                   <div className='max-w-[360px] w-full'>

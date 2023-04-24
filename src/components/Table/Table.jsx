@@ -125,17 +125,33 @@ const Table = ({
           <div className='my-8 mt-10 px-6 flex items-center justify-between'>
             <div>
               <h2 className='text-black text-opacity-60'>
-                Showing 1 to 3 of 3 entries
+                Showing {pageIndex + 1} to {pageCount} of {totalResults} entries
               </h2>
             </div>
             <div className='flex space-x-3 items-center'>
-              <button className='bg-white py-2 px-5 border border-black border-opacity-30 rounded-md'>
+              <button
+                disabled={!canPreviousPage}
+                onClick={() => {
+                  if (canPreviousPage) {
+                    setPageIndex(pageIndex - 1);
+                  }
+                }}
+                className='bg-white py-2 px-5 border border-black border-opacity-30 rounded-md'
+              >
                 Previous
               </button>
-              <button className='bg-primary  text-white p-2 px-4  rounded-md '>
-                1
-              </button>
-              <button className='bg-white py-2 px-5 border border-black border-opacity-30 rounded-md'>
+              <div className='bg-primary  text-white p-2 px-4  rounded-md '>
+                {pageIndex + 1}
+              </div>
+              <button
+                disabled={!canNextPage}
+                onClick={() => {
+                  if (canNextPage) {
+                    setPageIndex(pageIndex + 1);
+                  }
+                }}
+                className='bg-white py-2 px-5 border border-black border-opacity-30 rounded-md'
+              >
                 Next
               </button>
             </div>

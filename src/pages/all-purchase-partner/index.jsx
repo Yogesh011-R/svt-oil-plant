@@ -12,13 +12,16 @@ import TableInstance from '../../components/Table/TableInstance';
 import { useQuery } from 'react-query';
 import axios from 'axios';
 import { SERVER_URL } from '../../utils/config';
-import { DELETE_MODAL } from '../../utils/constant';
+import { DELETE_MODAL, entriesOption } from '../../utils/constant';
 import { useDispatch } from 'react-redux';
 import { showModal } from '../../redux/features/modalSlice';
 
-const getAllPartners = async () => {
+const getAllPartners = async ({ queryKey }) => {
+  const [_, limit, page] = queryKey;
   const res = await axios.get(
-    `${SERVER_URL}/soudha/partners?page=1&limit=10&sortBy=createdAt:desc`
+    `${SERVER_URL}/soudha/partners?page=${page + 1}&limit=${
+      limit?.value || 10
+    }&sortBy=createdAt:desc`
   );
 
   return res.data;
@@ -31,6 +34,9 @@ const PurchaseSoudha = () => {
     {
       Header: 'ID',
       accessor: 'partnerId',
+      Cell: ({ row }) => {
+        return <span>{+row.id + 1}</span>;
+      },
     },
     {
       Header: 'Name',
@@ -53,8 +59,6 @@ const PurchaseSoudha = () => {
       Header: 'Average rate',
       accessor: 'averageRate',
       Cell: ({ row }) => {
-        console.log('🚀 ~ file: index.jsx:52 ~ PurchaseSoudha ~ row:', row);
-
         return (
           <span>
             {row.original.averageRate && '₹' + row.original.averageRate}
@@ -69,7 +73,7 @@ const PurchaseSoudha = () => {
         return (
           <div>
             <Link
-              to={`${row.original.partnerId}`}
+              to={`${row.original.id}`}
               className='bg-secondary py-2.5 px-5 rounded-md text-white text-[11px]'
             >
               View
@@ -157,20 +161,18 @@ const PurchaseSoudha = () => {
   ];
   const [cSortBy, cSetSortBy] = useState();
   const [desc, setDesc] = useState(true);
-
-  // Headers
-
+  const [pageIndex, setPageIndex] = useState(0);
   const [searchValue, setSearchValue] = useState('');
-  const [entriesValue, setEntriesValue] = useState(10);
+  const [entriesValue, setEntriesValue] = useState(entriesOption[0]);
 
   const { data, isLoading, isError, error } = useQuery(
-    ['getAllPartners'],
+    ['getAllPartners', entriesValue, pageIndex],
     getAllPartners
   );
 
   let component = null;
 
-  if (error) {
+  if (isError) {
     component = (
       <p className='mt-6 ml-4 pb-10 text-center'>
         An error has occurred: {error.message}
@@ -196,6 +198,12 @@ const PurchaseSoudha = () => {
         setDesc={setDesc}
         tableData={data?.partners?.results}
         columnName={TABLE_COLUMNS}
+        pageIndex={pageIndex}
+        setPageIndex={setPageIndex}
+        cPageSize={entriesValue.value}
+        cSetPageSize={setEntriesValue}
+        pageCount={data?.partners?.totalPages ? data?.partners?.totalPages : -1}
+        totalResults={data?.partners?.totalResults}
       />
     );
   }

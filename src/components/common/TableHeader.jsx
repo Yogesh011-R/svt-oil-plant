@@ -16,6 +16,7 @@ const TableHeader = ({
   btnText,
   detailsData,
 }) => {
+  console.log('🚀 ~ file: TableHeader.jsx:19 ~ detailsData:', detailsData);
   return (
     <div>
       <div className='p-[18px] border-b'>
@@ -35,7 +36,7 @@ const TableHeader = ({
             <div className='ml-3'>{partnerDetails.location}</div>
             <div>Whatapp no</div>
             <div>:</div>
-            <div className='ml-3'>{partnerDetails.whatsApp}</div>
+            <div className='ml-3'>{partnerDetails.whatsappNo}</div>
           </div>
         </div>
       )}
@@ -60,7 +61,10 @@ const TableHeader = ({
           <div className='my-5 flex items-center justify-between'>
             <div className='flex space-x-7 items-center'>
               <h2>Show</h2>
-              <SelectEntries setEntriesValue={setEntriesValue} />
+              <SelectEntries
+                entries={entriesValue}
+                setEntriesValue={setEntriesValue}
+              />
             </div>
             <TableSearch value={searchValue} setValue={setSearchValue} />
           </div>

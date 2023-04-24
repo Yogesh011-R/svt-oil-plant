@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HiPencil } from 'react-icons/hi';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { Link, useParams } from 'react-router-dom';
@@ -14,11 +14,14 @@ import { useQuery } from 'react-query';
 import axios from 'axios';
 import { SERVER_URL } from '../../../utils/config';
 import { format } from 'date-fns';
+import { entriesOption } from '../../../utils/constant';
 
-const getSoudhaByPartners = async ({ queryKey }) => {
-  const [_, partnerId] = queryKey;
+const getBookedConsignments = async ({ queryKey }) => {
+  const [_, partnerId, page, limit] = queryKey;
   const res = await axios.get(
-    `${SERVER_URL}/soudha/byPartner/${partnerId}/1/10`
+    `${SERVER_URL}/soudha/consignment/${partnerId}?page=${page + 1}&limit=${
+      limit?.value || 10
+    }&sortBy=createdAt:desc`
   );
 
   return res.data;
@@ -29,6 +32,9 @@ const PurchaseSoudha = () => {
     {
       Header: 'ID',
       accessor: 'id',
+      Cell: ({ row }) => {
+        return +row.id + 1;
+      },
     },
     {
       Header: 'Oil Type',
@@ -37,7 +43,7 @@ const PurchaseSoudha = () => {
 
     {
       Header: 'Quantity in kg',
-      accessor: 'quantity',
+      accessor: 'bookedQuantity',
     },
     {
       Header: 'Rate',
@@ -48,12 +54,11 @@ const PurchaseSoudha = () => {
     },
     {
       Header: 'Difference amount',
-      accessor: 'differenceAmount',
+      accessor: 'advancePayment',
       Cell: ({ row }) => {
         return (
           <span>
-            {row.original.differenceAmount &&
-              '₹' + row.original.differenceAmount}
+            {row.original.advancePayment && '₹' + row.original.advancePayment}
           </span>
         );
       },
@@ -93,7 +98,7 @@ const PurchaseSoudha = () => {
       Header: 'Created by',
       accessor: 'createdBy',
       Cell: ({ row }) => {
-        return <h2>{partnerId}</h2>;
+        return <h2>{data.partner.partnerName}</h2>;
       },
     },
     {
@@ -143,15 +148,16 @@ const PurchaseSoudha = () => {
   ];
   const [cSortBy, cSetSortBy] = useState();
   const [desc, setDesc] = useState(true);
+  const [pageIndex, setPageIndex] = useState(0);
 
   const { partnerId } = useParams();
 
   const [searchValue, setSearchValue] = useState('');
-  const [entriesValue, setEntriesValue] = useState(10);
+  const [entriesValue, setEntriesValue] = useState(entriesOption[0]);
 
   const { data, isLoading, isError, error } = useQuery(
-    ['getSoudhaByPartners', partnerId],
-    getSoudhaByPartners
+    ['getBookedConsignments', partnerId, pageIndex, entriesValue],
+    getBookedConsignments
   );
 
   let component = null;
@@ -164,7 +170,7 @@ const PurchaseSoudha = () => {
     );
   } else if (isLoading) {
     component = <p className='mt-6 ml-4 pb-10 text-center'>Loading...</p>;
-  } else if (!data.soudhaViewDatas.length) {
+  } else if (!data.partner.consignments.length) {
     component = (
       <div className='py-20 flex flex-col items-center justify-center'>
         <p className=' text-center mb-5'>No Booking added yet!</p>
@@ -180,8 +186,16 @@ const PurchaseSoudha = () => {
         cSetSortBy={cSetSortBy}
         desc={desc}
         setDesc={setDesc}
-        tableData={data?.soudhaViewDatas}
+        tableData={data?.consignments?.results}
         columnName={TABLE_COLUMNS}
+        pageIndex={pageIndex}
+        setPageIndex={setPageIndex}
+        cPageSize={entriesValue.value}
+        cSetPageSize={setEntriesValue}
+        pageCount={
+          data?.consignments?.totalPages ? data?.consignments?.totalPages : -1
+        }
+        totalResults={data?.consignments?.totalResults}
       />
     );
   }
@@ -200,18 +214,24 @@ const PurchaseSoudha = () => {
         currentPage='Booked Purchase consignment'
       />
       <section className='bg-white my-8 rounded-[10px]'>
+        {/* <div className='py-20 flex flex-col items-center justify-center'>
+          <p className=' text-center mb-5'>No Booking added yet!</p>{' '}
+          <div>
+            <AddBtn text='Add new booking' link='add-consignment' />{' '}
+          </div>{' '}
+        </div> */}
         <TableHeader
           title='Booked Purchase consignment'
-          detailsData={data.soudhaViewDatas}
+          detailsData={data?.consignments?.results}
           searchValue={searchValue}
           setSearchValue={setSearchValue}
           entriesValue={entriesValue}
           setEntriesValue={setEntriesValue}
           partnerDetails={{
-            id: data?.partnerViewData.id,
-            name: data?.partnerViewData.firstName,
-            location: data?.partnerViewData.location,
-            whatsApp: data?.partnerViewData.whatsApp,
+            id: data?.partner?.tableId,
+            name: data?.partner?.partnerName,
+            location: data?.partner?.location,
+            whatsappNo: data?.partner?.whatsappNo,
           }}
           whatsApp={true}
           btnText='Add new booking'
@@ -264,7 +284,7 @@ const PurchaseSoudha = () => {
           {component}
         </div>
       </section>
-      <TotalDetails
+      {/* <TotalDetails
         totalInfo={[
           {
             id: 1,
@@ -290,7 +310,7 @@ const PurchaseSoudha = () => {
             value: data?.soudhaDetails?.totalPendingConsignent,
           },
         ]}
-      />
+      /> */}
     </div>
   );
 };

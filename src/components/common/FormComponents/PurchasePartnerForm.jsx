@@ -127,7 +127,10 @@ const PurchasePartnerForm = ({ apiFunction, values }) => {
             >
               Close
             </button>
-            <SubmitBtn text='Update' isSubmitting={isLoading} />
+            <SubmitBtn
+              text={values ? 'Update' : 'Submit'}
+              isSubmitting={isLoading}
+            />
           </div>
         </Form>
       </Formik>
