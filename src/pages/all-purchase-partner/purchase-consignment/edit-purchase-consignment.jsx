@@ -23,7 +23,7 @@ const EditPurchaseConsignment = () => {
       />
       <div className='max-w-[480px] w-full rounded-[10px] bg-white  my-8'>
         <div className='bg-primaryLight py-[18px] px-7 rounded-t-[10px]'>
-          <h1 className='text-xl font-medium'>Book New Purchase Consignment</h1>
+          <h1 className='text-xl font-medium'>Edit Purchase Consignment</h1>
         </div>
         <BookingConsignmentForm
           editValue={{ ...state, bookingDate: new Date(state.bookingDate) }}

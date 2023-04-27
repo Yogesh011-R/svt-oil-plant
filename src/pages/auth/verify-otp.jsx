@@ -3,7 +3,7 @@ import * as Yup from 'yup';
 import AuthInput from '../../components/common/Form/AuthInput';
 import AuthSubmitBtn from '../../components/common/Form/AuthSubmitBtn';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { addToast } from '../../redux/features/toastSlice';
 import { ERROR, SUCCESS } from '../../utils/constant';
 import { handleError } from '../../utils/helper';
@@ -38,9 +38,7 @@ const VerifyOtp = () => {
     try {
       const { data } = await axios.post(`${SERVER_URL}/auth/verify-otp`, otp);
 
-      console.log('🚀 ~ file: login.jsx:36 ~ login ~ data:', data);
       if (data) {
-        console.log('🚀 ~ file: login.jsx:36 ~ login ~ data:', data);
         setIsSubmitting(false);
         // update state
         // if (!data.user.isActive) {
@@ -86,6 +84,12 @@ const VerifyOtp = () => {
     }
   };
 
+  const otpInput = useRef(null);
+
+  useEffect(() => {
+    otpInput.current.focus();
+  }, []);
+
   return (
     <div className='h-screen w-full flex items-center justify-center'>
       <div className='max-w-md w-full rounded-[10px]'>
@@ -110,6 +114,7 @@ const VerifyOtp = () => {
                 id='otp'
                 type='text'
                 placeholder='Enter OTP'
+                inputRef={otpInput}
               />
 
               <div className='w-full mt-10'>

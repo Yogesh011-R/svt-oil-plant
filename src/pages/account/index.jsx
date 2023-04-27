@@ -5,12 +5,33 @@ import { Link } from 'react-router-dom';
 import BreadCrumb from '../../components/common/BreadCrumb';
 import TableHeader from '../../components/common/TableHeader';
 import TableInstance from '../../components/Table/TableInstance';
+import axios from 'axios';
+import { useQuery } from 'react-query';
+import { SERVER_URL } from '../../utils/config';
+import { entriesOption } from '../../utils/constant';
+import AddBtn from '../../components/common/AddBtn';
+import { decrypt } from '../../utils/helper';
+
+const getAllUser = async ({ queryKey }) => {
+  const [_, limit, page] = queryKey;
+
+  const res = await axios.get(
+    `${SERVER_URL}/users?page=${page + 1}&limit=${
+      limit?.value || 10
+    }&sortBy=createdAt:desc`
+  );
+  return res.data;
+};
 
 const Account = () => {
   const TABLE_COLUMNS = [
     {
       Header: 'ID',
       accessor: 'id',
+
+      Cell: ({ row }) => {
+        return +row.id + 1;
+      },
     },
     {
       Header: 'Photo',
@@ -30,7 +51,7 @@ const Account = () => {
 
     {
       Header: 'Full Name',
-      accessor: 'fullName',
+      accessor: 'name',
     },
     {
       Header: 'Phone Number',
@@ -43,6 +64,11 @@ const Account = () => {
     {
       Header: 'Password',
       accessor: 'password',
+      Cell: ({ row }) => {
+        console.log('🚀 ~ file: index.jsx:71 ~ Account ~ row:', row);
+
+        return <div>{decrypt(row.original.plain)}</div>;
+      },
     },
 
     {
@@ -97,7 +123,43 @@ const Account = () => {
   // Headers
 
   const [searchValue, setSearchValue] = useState('');
-  const [entriesValue, setEntriesValue] = useState(10);
+  const [entriesValue, setEntriesValue] = useState(entriesOption[0]);
+  const [pageIndex, setPageIndex] = useState(0);
+
+  const { data, isLoading, isError, error } = useQuery(
+    ['getAllUsers', entriesValue, pageIndex],
+    getAllUser
+  );
+
+  let component = null;
+
+  if (isError) {
+    component = (
+      <p className='mt-6 ml-4 pb-10 text-center'>
+        An error has occurred: {error.message}
+      </p>
+    );
+  } else if (isLoading) {
+    component = <p className='mt-6 ml-4 pb-10 text-center'>Loading...</p>;
+  } else {
+    component = (
+      <TableInstance
+        cSortBy={cSortBy}
+        cSetSortBy={cSetSortBy}
+        desc={desc}
+        setDesc={setDesc}
+        tableData={data?.results}
+        columnName={TABLE_COLUMNS}
+        pageIndex={pageIndex}
+        setPageIndex={setPageIndex}
+        cPageSize={entriesValue.value}
+        cSetPageSize={setEntriesValue}
+        pageCount={data?.totalPages ? data?.totalPages : -1}
+        totalResults={data?.totalResults}
+      />
+    );
+  }
+
   return (
     <div>
       <BreadCrumb
@@ -113,9 +175,11 @@ const Account = () => {
           setEntriesValue={setEntriesValue}
           addLink='add-user'
           btnText='Add New User'
+          detailsData={data?.results}
         />
         <div>
-          <TableInstance
+          {component}
+          {/* <TableInstance
             cSortBy={cSortBy}
             cSetSortBy={cSetSortBy}
             desc={desc}
@@ -168,7 +232,15 @@ const Account = () => {
               },
             ]}
             columnName={TABLE_COLUMNS}
-          />
+            pageIndex={pageIndex}
+            setPageIndex={setPageIndex}
+            cPageSize={entriesValue.value}
+            cSetPageSize={setEntriesValue}
+            pageCount={
+              data?.partners?.totalPages ? data?.partners?.totalPages : -1
+            }
+            totalResults={data?.partners?.totalResults}
+          /> */}
         </div>
       </section>
     </div>

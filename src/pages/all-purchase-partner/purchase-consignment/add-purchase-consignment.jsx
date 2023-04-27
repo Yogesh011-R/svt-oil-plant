@@ -2,7 +2,6 @@ import { Formik, Form, Field } from 'formik';
 import BreadCrumb from '../../../components/common/BreadCrumb';
 import axios from 'axios';
 import { SERVER_URL } from '../../../utils/config';
-
 import BookingConsignmentForm from '../../../components/common/FormComponents/BookingConsignmentForm';
 
 const addBookings = async data => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import BreadCrumb from '../../../../components/common/BreadCrumb';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import 'yup-phone-lite';
@@ -10,53 +10,19 @@ import SubmitBtn from '../../../../components/common/Form/SubmitBtn';
 import { SERVER_URL } from '../../../../utils/config';
 import axios from 'axios';
 import { useMutation } from 'react-query';
+import ReceivedConsignmentForm from '../../../../components/common/FormComponents/ReceivedConsignmentForm';
 
-const addPartSoudha = async data => {
+const addReceivedConsignment = async data => {
   const res = await axios.post(
-    `${SERVER_URL}/part-soudha/savePartSoudha`,
+    `${SERVER_URL}/soudha/consignmentReceived`,
     data
   );
   return res.data;
 };
 
 const AddReceivedSoudha = () => {
-  const { partnerId, consignmentId } = useParams();
-  const navigate = useNavigate();
-
-  const initialValues = {
-    id: consignmentId,
-    bookingDate: new Date(),
-    billNumber: '',
-    quantity: '',
-    rate: '',
-    totalAmount: '',
-    differenceAmount: '',
-    vehicleNumber: '',
-    unloadWeight: '',
-    shortWeight: '',
-    paidAmount: '',
-  };
-  const validationSchema = Yup.object({
-    bookingDate: Yup.string('Please Select a Date').required(
-      'Date is required'
-    ),
-    billNumber: Yup.string().required('Bill Number is required'),
-    quantity: Yup.string().required('Bill Quantity is required'),
-    rate: Yup.string().required('Bill Rate is required'),
-    totalAmount: Yup.string().required('Totla Bill Amount is required'),
-    differenceAmount: Yup.string(),
-    vehicleNumber: Yup.string().required('Vehicle Number is required'),
-    unloadWeight: Yup.string().required('Unload Quantity is required'),
-    shortWeight: Yup.string().required('Short Quantity is required'),
-    paidAmount: Yup.string(),
-  });
-
-  const { mutate, data, error, isLoading } = useMutation({
-    mutationFn: addPartSoudha,
-    onSuccess: () => {
-      navigate(`/all-purchase-partner/${partnerId}/${consignmentId}`);
-    },
-  });
+  const { partnerId, consignmentId: bookedConsignmentId } = useParams();
+  const { state } = useLocation();
 
   return (
     <div>
@@ -77,7 +43,11 @@ const AddReceivedSoudha = () => {
           <h1 className='text-xl font-medium'>Add New Received Soudha</h1>
         </div>
         <div className='p-6'>
-          <Formik
+          <ReceivedConsignmentForm
+            apiFunction={addReceivedConsignment}
+            pricePerKG={state.pricePerKG}
+          />
+          {/* <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={(values, { setFieldError }) => {
@@ -101,8 +71,8 @@ const AddReceivedSoudha = () => {
                       <DatePicker
                         label='Booking Date*'
                         placeholder='Select Booking Date*'
-                        id='bookingDate'
-                        name='bookingDate'
+                        id='date'
+                        name='date'
                       />
                     </div>
                     <div className=' w-full'>
@@ -116,66 +86,66 @@ const AddReceivedSoudha = () => {
                     <div className=' w-full'>
                       <Input
                         label='Bill no*'
-                        name='billNumber'
-                        id='billNumber'
+                        name='billNo'
+                        id='billNo'
                         placeholder='Enter bill no'
                       />
                     </div>
                     <div className=' w-full'>
                       <Input
                         label='Vehicle number*'
-                        name='vehicleNumber'
-                        id='vehicleNumber '
+                        name='vehicleNo'
+                        id='vehicleNo '
                         placeholder='Enter vehicle number'
                       />
                     </div>
                     <div className=' w-full'>
                       <Input
-                        label='Billing quantity*'
-                        name='quantity'
-                        id='quantity'
-                        placeholder='Billing quantity*'
+                        label='Billing Quantity*'
+                        name='billingQuantity'
+                        id='billingQuantity'
+                        placeholder='Billing Quantity*'
                       />
                     </div>
 
                     <div className=' w-full'>
                       <Input
-                        label='Unload quantity*'
-                        name='unloadWeight'
-                        id='unloadWeight'
-                        placeholder='Enter unload quantity'
+                        label='Unload Quantity*'
+                        name='unloadQuantity'
+                        id='unloadQuantity'
+                        placeholder='Enter unload Quantity'
                       />
                     </div>
 
                     <div className=' w-full'>
                       <Input
-                        label='Billing rate for 10kg*'
-                        name='rate'
-                        id='rate'
+                        label='Billing Rate for 10kg*'
+                        name='billingRate'
+                        id='billingRate'
                         placeholder='Enter price'
                       />
                     </div>
                     <div className=' w-full'>
                       <Input
-                        label='Short quantity*'
-                        name='shortWeight'
-                        id='shortWeight'
-                        placeholder='Enter short quantity'
+                        label='Short Quantity*'
+                        name='shortQuantity'
+                        id='shortQuantity'
+                        placeholder='Enter short Quantity'
                       />
                     </div>
                     <div className=' w-full'>
                       <Input
-                        label='Total billing amount*'
-                        name='totalAmount'
-                        id='totalAmount'
+                        label='Total Billing amount*'
+                        name='totalBillingAmount'
+                        id='totalBillingAmount'
                         placeholder='Enter price'
                       />
                     </div>
                     <div className=' w-full'>
                       <Input
                         label='Payment'
-                        name='paidAmount'
-                        id='paidAmount'
+                        name='payment'
+                        id='payment'
                         placeholder='Enter paid amount'
                       />
                     </div>
@@ -184,7 +154,7 @@ const AddReceivedSoudha = () => {
                     <button
                       onClick={() => {
                         navigate(
-                          `/all-purchase-partner/${partnerId}/${consignmentId}`
+                          `/all-purchase-partner/${partnerId}/${bookedConsignmentId}`
                         );
                       }}
                       disabled={isLoading}
@@ -199,7 +169,7 @@ const AddReceivedSoudha = () => {
                 </Form>
               );
             }}
-          </Formik>
+          </Formik> */}
         </div>
       </div>
     </div>

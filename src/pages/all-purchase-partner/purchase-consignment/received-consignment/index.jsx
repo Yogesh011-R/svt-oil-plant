@@ -10,24 +10,42 @@ import axios from 'axios';
 import { SERVER_URL } from '../../../../utils/config';
 import { useQuery } from 'react-query';
 import AddBtn from '../../../../components/common/AddBtn';
+import { DELETE_MODAL, entriesOption } from '../../../../utils/constant';
+import { format } from 'date-fns';
+import { calculateGST } from '../../../../utils/helper';
+import { showModal } from '../../../../redux/features/modalSlice';
+import { useDispatch } from 'react-redux';
 
-const getPartSoudha = async ({ queryKey }) => {
-  const [_, soudhaId, size] = queryKey;
+const getReceivedConsignments = async ({ queryKey }) => {
+  const [_, bookedConsignmentId, limit, page] = queryKey;
   const res = await axios.get(
-    `${SERVER_URL}/part-soudha/bySoudha/${soudhaId}/1/${size}`
+    `${SERVER_URL}/soudha/consignmentReceived/${bookedConsignmentId}?page=${
+      page + 1
+    }&limit=${limit?.value || 10}&sortBy=createdAt:desc`
   );
 
   return res.data;
 };
 const ReceivedConsignment = () => {
+  const dispatch = useDispatch();
   const TABLE_COLUMNS = [
     {
       Header: 'ID',
       accessor: 'id',
+      Cell: ({ row }) => {
+        return +row.id + 1;
+      },
     },
     {
       Header: 'Date',
       accessor: 'date',
+      Cell: ({ row }) => {
+        return (
+          <div>
+            <p>{format(new Date(row.original.date), 'MM/dd/yyyy')}</p>
+          </div>
+        );
+      },
     },
 
     {
@@ -36,20 +54,26 @@ const ReceivedConsignment = () => {
     },
     {
       Header: 'Billing Quantity in kg',
-      accessor: 'billingQuantityInKg',
+      accessor: 'billingQuantity',
     },
     {
       Header: 'Billing Rate',
       accessor: 'billingRate',
       Cell: ({ row }) => {
-        return <span>₹{row.original.billingRate}</span>;
+        return (
+          <span>
+            {row.original.billingRate
+              ? '₹' + calculateGST(row.original.billingRate)
+              : '-'}
+          </span>
+        );
       },
     },
     {
       Header: 'Total Billing Amount',
-      accessor: 'totalBillingAmt',
+      accessor: 'totalBillingAmount',
       Cell: ({ row }) => {
-        return <span>₹{row.original.totalBillingAmt}</span>;
+        return <span>₹{row.original.totalBillingAmount}</span>;
       },
     },
     {
@@ -62,17 +86,19 @@ const ReceivedConsignment = () => {
     },
     {
       Header: 'Unload weight',
-      accessor: 'unloadWeight',
+      accessor: 'unloadQuantity',
     },
     {
       Header: 'Short weight',
-      accessor: 'shortWeight',
+      accessor: 'shortQuantity',
     },
     {
       Header: 'Payment',
       accessor: 'payment',
       Cell: ({ row }) => {
-        return <span>₹{row.original.payment}</span>;
+        return (
+          <span>{row.original.payment ? '₹' + row.original.payment : '-'}</span>
+        );
       },
     },
     {
@@ -85,14 +111,31 @@ const ReceivedConsignment = () => {
       Cell: ({ row }) => {
         return (
           <div className='flex space-x-3 justify-center'>
-            <button
+            <Link
+              state={{
+                ...row.original,
+                pricePerKG: data?.bookedConsignment?.rate,
+              }}
+              to='edit-received-soudha'
               type='button'
               title='Edit'
               className='bg-primary p-1.5  text-xl text-white rounded'
             >
               <HiPencil />
-            </button>
+            </Link>
             <button
+              onClick={() => {
+                dispatch(
+                  showModal({
+                    modalType: DELETE_MODAL,
+                    modalProps: {
+                      id: row.original.id,
+                      route: 'soudha/consignmentReceived',
+                      invalidateKey: 'getReceivedConsignments',
+                    },
+                  })
+                );
+              }}
               type='button'
               title='Delete'
               className='bg-red  p-1.5  text-xl text-white rounded'
@@ -105,21 +148,18 @@ const ReceivedConsignment = () => {
       disableSortBy: true,
     },
   ];
-  let { consignmentId: soudhaId, partnerId } = useParams();
-  console.log(
-    '🚀 ~ file: index.jsx:108 ~ ReceivedConsignment ~ useParams():',
-    useParams()
-  );
+  let { consignmentId: bookedConsignmentId, partnerId } = useParams();
 
   const [cSortBy, cSetSortBy] = useState();
   const [desc, setDesc] = useState(true);
+  const [pageIndex, setPageIndex] = useState(0);
 
   const [searchValue, setSearchValue] = useState('');
-  const [entriesValue, setEntriesValue] = useState(10);
+  const [entriesValue, setEntriesValue] = useState(entriesOption[0]);
 
   const { data, isLoading, isError, error } = useQuery(
-    ['getPartSoudha', soudhaId, entriesValue],
-    getPartSoudha
+    ['getReceivedConsignments', bookedConsignmentId, entriesValue, pageIndex],
+    getReceivedConsignments
   );
 
   let component = null;
@@ -132,14 +172,18 @@ const ReceivedConsignment = () => {
     );
   } else if (isLoading) {
     component = <p className='mt-6 ml-4 pb-10 text-center'>Loading...</p>;
-  } else if (!data.partSoudhaViewDatas.length) {
+  } else if (!data.receivedConsignments.results.length) {
     component = (
       <div className='py-20 flex flex-col items-center justify-center'>
         <p className=' text-center mb-5'>
           No Received consignment details added yet!
         </p>
         <div>
-          <AddBtn text='Add new received Soudha' link='add-received-soudha' />
+          <AddBtn
+            text='Add new received Soudha'
+            link='add-received-soudha'
+            state={{ pricePerKG: data.bookedConsignment.rate }}
+          />
         </div>
       </div>
     );
@@ -150,8 +194,18 @@ const ReceivedConsignment = () => {
         cSetSortBy={cSetSortBy}
         desc={desc}
         setDesc={setDesc}
-        tableData={data?.partSoudhaViewDatas}
+        tableData={data.receivedConsignments.results}
         columnName={TABLE_COLUMNS}
+        pageIndex={pageIndex}
+        setPageIndex={setPageIndex}
+        cPageSize={entriesValue.value}
+        cSetPageSize={setEntriesValue}
+        pageCount={
+          data?.receivedConsignments?.totalPages
+            ? data?.receivedConsignments?.totalPages
+            : -1
+        }
+        totalResults={data?.receivedConsignments?.totalResults}
       />
     );
   }
@@ -181,90 +235,47 @@ const ReceivedConsignment = () => {
           entriesValue={entriesValue}
           setEntriesValue={setEntriesValue}
           partnerDetails={{
-            id: data?.partnerViewData.id,
-            name: data?.partnerViewData.firstName,
-            location: data?.partnerViewData.location,
-            whatsApp: data?.partnerViewData.whatsApp,
+            id: data?.bookedConsignment.partnerId.id,
+            name: data?.bookedConsignment.partnerId.partnerName,
+            location: data?.bookedConsignment.partnerId.location,
+            whatsappNo: data?.bookedConsignment.partnerId.whatsappNo,
+            oilType: data?.bookedConsignment.oilType,
+            bookedQuantity: data?.bookedConsignment.bookedQuantity,
+            rate: data?.bookedConsignment.rate,
+            advancePayment: data?.bookedConsignment.advancePayment,
           }}
-          detailsData={data.partSoudhaViewDatas}
+          morePartnerDetails={true}
+          detailsData={data.receivedConsignments.results}
           whatsApp={true}
           btnText='Add new received Soudha '
           addLink='add-received-soudha'
+          linkState={{ pricePerKG: data.bookedConsignment.rate }}
         />
-        <div>
-          {/* <TableInstance
-            cSortBy={cSortBy}
-            cSetSortBy={cSetSortBy}
-            desc={desc}
-            setDesc={setDesc}
-            tableData={[
-              {
-                id: 1,
-                date: 'Sat,20 Apr 2020',
-                billNo: '1000',
-                billingQuantityInKg: '50000',
-                billingRate: '955.00',
-                totalBillingAmt: '120000',
-                difference: '100000',
-                vehicleNo: 'KA635771',
-                unloadWeight: '20000',
-                shortWeight: '0',
-                payment: '120000',
-                createdBy: 'Chandrika',
-              },
-              {
-                id: 2,
-                date: 'Sat,21 Apr 2020',
-                billNo: '1001',
-                billingQuantityInKg: '20000',
-                billingRate: '975.00',
-                totalBillingAmt: '120000',
-                difference: '0',
-                vehicleNo: 'KA635772',
-                unloadWeight: '12490',
-                shortWeight: '10',
-                payment: '0',
-                createdBy: 'Chandrika',
-              },
-              {
-                id: 3,
-                date: 'Sat,22 Apr 2020',
-                billNo: '1002',
-                billingQuantityInKg: '60000',
-                billingRate: '695.00',
-                totalBillingAmt: '120000',
-                difference: '0',
-                vehicleNo: 'KA635773',
-                unloadWeight: '9500',
-                shortWeight: '0',
-                payment: '20000',
-                createdBy: 'Chandrika',
-              },
-            ]}
-            columnName={TABLE_COLUMNS}
-          /> */}
-          {component}
-        </div>
+        <div>{component}</div>
       </section>
-      <TotalDetails
-        totalInfo={[
-          {
-            id: 1,
-            name: 'Total Pending consignment',
-            value: '10000',
-          },
-          {
-            id: 2,
-            name: 'Total payment pending',
-            value: '₹120000',
-          },
-          {
-            id: 3,
-            name: 'Difference amount',
-            value: '₹150000',
-          },
-        ]}
-      />
+      {data?.totalInfo && (
+        <TotalDetails
+          totalInfo={[
+            {
+              id: 1,
+              name: 'Total Pending consignment',
+              value:
+                data.bookedConsignment?.bookedQuantity -
+                data.totalInfo?.totalPendingConsignment,
+            },
+            {
+              id: 2,
+              name: 'Total payment pending',
+              value: '₹' + data.totalInfo?.pendingPayment,
+            },
+            {
+              id: 3,
+              name: 'Difference amount',
+              value: '₹' + data?.totalInfo?.differenceAmount,
+            },
+          ]}
+        />
+      )}
     </div>
   );
 };

@@ -57,18 +57,29 @@ const PurchaseSoudha = () => {
     },
     {
       Header: 'Difference amount',
-      accessor: 'difference',
-      // Cell: ({ row }) => {
-      //   return (
-      //     <span>
-      //       {row.original.advancePayment && '₹' + row.original.advancePayment}
-      //     </span>
-      //   );
-      // },
+      accessor: 'differenceAmount',
+      Cell: ({ row }) => {
+        return (
+          <span>
+            {row?.original?.totalInfo?.differenceAmount
+              ? '₹' + row?.original?.totalInfo?.differenceAmount
+              : '-'}
+          </span>
+        );
+      },
     },
     {
       Header: 'Pending consignment',
       accessor: 'pendingConsignment',
+      Cell: ({ row }) => {
+        return (
+          <span>
+            {row?.original?.totalInfo?.totalPendingConsignment
+              ? '₹' + row?.original?.totalInfo?.totalPendingConsignment
+              : '-'}
+          </span>
+        );
+      },
     },
     {
       Header: 'Soudha details',
@@ -110,13 +121,13 @@ const PurchaseSoudha = () => {
       Cell: ({ row }) => {
         return (
           <div>
-            {row.original.soudhaStatus ? (
-              <div className='bg-green text-green  bg-opacity-20  w-fit px-5 p-1 rounded-full text-[11px] mx-auto'>
-                Complete
-              </div>
-            ) : (
+            {row.original.status === 'pending' ? (
               <div className='bg-yellow text-yellow  bg-opacity-20  w-fit px-5 p-1 rounded-full text-[11px] mx-auto'>
                 Pending
+              </div>
+            ) : (
+              <div className='bg-green text-green  bg-opacity-20  w-fit px-5 p-1 rounded-full text-[11px] mx-auto'>
+                Complete
               </div>
             )}
           </div>
@@ -172,9 +183,53 @@ const PurchaseSoudha = () => {
   const [searchValue, setSearchValue] = useState('');
   const [entriesValue, setEntriesValue] = useState(entriesOption[0]);
 
+  const [extraTotalInfo, setExtraTotalInfo] = useState({
+    totalDifferencesAmount: 0,
+    totalPendingConsignment: 0,
+  });
+
   const { data, isLoading, isError, error } = useQuery(
     ['getBookedConsignments', partnerId, pageIndex, entriesValue],
-    getBookedConsignments
+    getBookedConsignments,
+    {
+      select: data => {
+        const newResult = data.consignments.results.map((item, idx) => {
+          return {
+            ...item,
+            totalInfo: data.receivedConsignTotalInfo.filter(info => {
+              return info.id === item.id;
+            })[0]?.totalInfo,
+          };
+        });
+
+        const totalFu = () => {
+          let totalPendingConsignment = 0,
+            differenceAmount = 0;
+          for (let i = 0; i < data?.receivedConsignTotalInfo?.length; i++) {
+            if (data?.receivedConsignTotalInfo[i]?.totalInfo) {
+              totalPendingConsignment =
+                totalPendingConsignment +
+                +data?.receivedConsignTotalInfo[i]?.totalInfo
+                  ?.totalPendingConsignment;
+              differenceAmount =
+                differenceAmount +
+                +data?.receivedConsignTotalInfo[i]?.totalInfo?.differenceAmount;
+            }
+          }
+
+          return { totalPendingConsignment, differenceAmount };
+        };
+
+        return {
+          ...data,
+          consignments: { ...data.consignments, results: newResult },
+          totalInfo: {
+            ...data.totalInfo,
+            ...totalFu(),
+          },
+        };
+      },
+    }
   );
 
   let component = null;
@@ -187,7 +242,7 @@ const PurchaseSoudha = () => {
     );
   } else if (isLoading) {
     component = <p className='mt-6 ml-4 pb-10 text-center'>Loading...</p>;
-  } else if (!data.consignments.results.length) {
+  } else if (!data?.consignments?.results?.length) {
     component = (
       <div className='py-20 flex flex-col items-center justify-center'>
         <p className=' text-center mb-5'>No Booking added yet!</p>
@@ -312,18 +367,23 @@ const PurchaseSoudha = () => {
             {
               id: 2,
               name: 'Average rate',
-              value: '₹' + data?.totalInfo?.averageRate,
+              value:
+                '₹' +
+                parseFloat(
+                  data?.totalInfo?.averageRate /
+                    data?.totalInfo?.totalBookQuantity
+                ).toFixed(2),
             },
-            // {
-            //   id: 3,
-            //   name: 'Total difference amount',
-            //   value: '₹' + data?.soudhaDetails?.totalDifferenceAmount,
-            // },
-            // {
-            //   id: 4,
-            //   name: 'Total pending consignment',
-            //   value: data?.soudhaDetails?.totalPendingConsignent,
-            // },
+            {
+              id: 3,
+              name: 'Total difference amount',
+              value: '₹' + data?.totalInfo?.differenceAmount,
+            },
+            {
+              id: 4,
+              name: 'Total difference amount',
+              value: data?.totalInfo?.totalPendingConsignment,
+            },
           ]}
         />
       )}

@@ -15,7 +15,7 @@ const TotalDetails = ({ totalInfo }) => {
             return (
               <div
                 key={id}
-                className='grid grid-cols-[180px_180px] border-[0.5px]   divide-black divide-opacity-30  divide-x-[0.5px]'
+                className='grid grid-cols-[280px_180px] border-[0.5px]   divide-black divide-opacity-30  divide-x-[0.5px]'
               >
                 <div className='py-4 px-5'>
                   <h2>{name}</h2>

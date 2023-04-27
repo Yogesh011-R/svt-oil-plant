@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { usePagination, useRowSelect, useSortBy, useTable } from 'react-table';
 import Table from './Table';
+import { useSelector } from 'react-redux';
 
 const TableInstance = ({
   tableData,
@@ -29,13 +30,19 @@ const TableInstance = ({
   );
   const data = useMemo(() => tableData, [tableData]);
 
+  const user = useSelector(state => {
+    return state.auth.user;
+  });
+
   let component = <></>;
 
   const tableInstance = useTable(
     {
       columns,
+
       data,
       initialState: {
+        hiddenColumns: user.role === 'user' ? ['action'] : [''],
         pageSize: cPageSize,
         pageIndex,
         sortBy: cSortBy

@@ -15,19 +15,24 @@ const TableHeader = ({
   addLink,
   btnText,
   detailsData,
+  morePartnerDetails,
+  linkState,
 }) => {
-  console.log('🚀 ~ file: TableHeader.jsx:19 ~ detailsData:', detailsData);
   return (
     <div>
       <div className='p-[18px] border-b'>
         <h1 className='text-xl font-medium'>{title}</h1>
       </div>
       {partnerDetails && (
-        <div className='p-[18px] max-w-[320px]'>
-          <div className='grid grid-cols-[110px_max-content_1fr] gap-2 gap-y-1'>
-            <div>Partner ID</div>
-            <div>:</div>
-            <div className='ml-3'>{partnerDetails.id}</div>
+        <div className='p-[18px] max-w-[380px]'>
+          <div className='grid grid-cols-[150px_max-content_1fr] gap-2 gap-y-1'>
+            {!morePartnerDetails && (
+              <>
+                <div>Partner ID</div>
+                <div>:</div>
+                <div className='ml-3'>{partnerDetails.id}</div>
+              </>
+            )}
             <div>Partner name</div>
             <div>:</div>
             <div className='ml-3'>{partnerDetails.name}</div>
@@ -37,6 +42,31 @@ const TableHeader = ({
             <div>Whatapp no</div>
             <div>:</div>
             <div className='ml-3'>{partnerDetails.whatsappNo}</div>
+            {morePartnerDetails && (
+              <>
+                <div>Oil Type</div>
+                <div>:</div>
+                <div className='ml-3'>{partnerDetails.oilType}</div>
+                <div>Booked Quantity</div>
+                <div>:</div>
+                <div className='ml-3'>
+                  {partnerDetails.bookedQuantity + ' KG'}
+                </div>
+                <div>Price for 10KG</div>
+                <div>:</div>
+                <div className='ml-3'>₹{partnerDetails.rate}</div>
+                <div>Total Booked rate</div>
+                <div>:</div>
+                <div className='ml-3'>
+                  {'₹' +
+                    partnerDetails.bookedQuantity *
+                      (partnerDetails.rate / 10) || '-'}
+                </div>
+                <div>Advance Payment</div>
+                <div>:</div>
+                <div className='ml-3'>₹{partnerDetails.advancePayment}</div>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -54,7 +84,7 @@ const TableHeader = ({
             </div>
             {addLink && (
               <div>
-                <AddBtn text={btnText} link={addLink} />
+                <AddBtn text={btnText} link={addLink} state={linkState} />
               </div>
             )}
           </div>

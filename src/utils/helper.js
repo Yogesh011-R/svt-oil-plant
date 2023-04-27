@@ -186,6 +186,12 @@ export const handleError = err => {
   return message;
 };
 
+export const calculateGST = amount => {
+  // Assuming the amount is stored in a variable called "amount"
+  let gst = amount * 0.05; // Calculate 5% of the amount as GST
+  return amount + gst; // Add GST to the amount to get the total amount
+};
+
 export const checkIsAdmin = user => {
   if (user.role === 'admin') {
     return true;

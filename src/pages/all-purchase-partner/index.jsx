@@ -76,7 +76,11 @@ const PurchaseSoudha = () => {
         return (
           <span>
             {row?.original?.totalInfo?.averageRate
-              ? '₹' + row?.original?.totalInfo?.averageRate
+              ? '₹' +
+                parseFloat(
+                  row?.original?.totalInfo?.averageRate /
+                    row?.original?.totalInfo?.totalBookQuantity
+                ).toFixed(2)
               : '-'}
           </span>
         );
@@ -186,11 +190,8 @@ const PurchaseSoudha = () => {
     getAllPartners,
     {
       select: data => {
+        console.log('🚀 ~ file: index.jsx:193 ~ PurchaseSoudha ~ data:', data);
         const newResult = data.partners.results.map((item, idx) => {
-          console.log(
-            '🚀 ~ file: index.jsx:191 ~ newResult ~ data.totalInfo[idx].totalInfo:',
-            data.totalInfo.filter(info => info.id === item.id)[0]?.totalInfo
-          );
           return {
             ...item,
             totalInfo: data.totalInfo.filter(info => info.id === item.id)[0]

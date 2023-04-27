@@ -2,11 +2,12 @@ import React from 'react';
 import { Field, useField } from 'formik';
 import ErrorBox from './ErrorBox';
 
-const AuthInput = ({ label, type, placeholder, Icon, ...props }) => {
+const AuthInput = ({ label, type, placeholder, Icon, inputRef, ...props }) => {
   const [field, meta] = useField({ ...props, type });
   return (
     <div className='auth-form-group relative  mb-5'>
       <input
+        ref={inputRef}
         {...field}
         {...props}
         type={type}

@@ -42,6 +42,11 @@ const AddReceivedSoudha = lazy(() =>
     '../pages/all-purchase-partner/purchase-consignment/received-consignment/add-received-soudha'
   )
 );
+const EditReceivedSoudha = lazy(() =>
+  import(
+    '../pages/all-purchase-partner/purchase-consignment/received-consignment/edit-received-soudha'
+  )
+);
 // PendingConsignment
 const PendingConsignment = lazy(() => import('../pages/pending-consignment'));
 // Accounts
@@ -115,6 +120,10 @@ const DefaultLayout = () => {
                 <Route
                   path='/all-purchase-partner/:partnerId/:consignmentId/add-received-soudha'
                   element={<AddReceivedSoudha />}
+                />
+                <Route
+                  path='/all-purchase-partner/:partnerId/:consignmentId/edit-received-soudha'
+                  element={<EditReceivedSoudha />}
                 />
                 <Route
                   path='/pending-consignment'

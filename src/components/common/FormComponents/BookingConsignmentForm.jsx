@@ -28,13 +28,12 @@ const BookingConsignmentForm = ({ apiFunction, editValue }) => {
   ]);
   const initialValues = {
     partnerId,
-    bookingDate: new Date(),
-    oilType: '',
+    bookingDate: editValue ? editValue.bookingDate : new Date(),
+    oilType: editValue ? editValue.oilType : '',
     newOilType: '',
-    bookedQuantity: '',
-    rate: '',
-
-    // advancePayment: '',
+    bookedQuantity: editValue ? editValue.bookedQuantity : '',
+    rate: editValue ? editValue.rate : '',
+    advancePayment: editValue ? editValue.advancePayment : '',
   };
   const validationSchema = Yup.object({
     bookingDate: Yup.string('Please Select a Date').required(
@@ -44,7 +43,7 @@ const BookingConsignmentForm = ({ apiFunction, editValue }) => {
     newOilType: Yup.string(),
     bookedQuantity: Yup.string().required('Booked quantity is required'),
     rate: Yup.string().required('Rate is required'),
-    // advancePayment: Yup.string(),
+    advancePayment: Yup.string(),
   });
 
   const { mutate, data, error, isLoading } = useMutation({
@@ -54,7 +53,7 @@ const BookingConsignmentForm = ({ apiFunction, editValue }) => {
       dispatch(
         addToast({
           kind: SUCCESS,
-          msg: 'Consignment  added successfully',
+          msg: `Consignment  ${editValue ? 'updated' : 'added'} successfully`,
         })
       );
       queryClient.invalidateQueries('getBookedConsignments', 'getAllPartners');
@@ -73,7 +72,7 @@ const BookingConsignmentForm = ({ apiFunction, editValue }) => {
   return (
     <div className='p-6'>
       <Formik
-        initialValues={editValue || initialValues}
+        initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={(formValue, { setFieldError }) => {
           if (showAddNewOil && !formValue.newOilType) {
@@ -234,10 +233,10 @@ const BookingConsignmentForm = ({ apiFunction, editValue }) => {
 
               <div className='max-w-[360px] w-full'>
                 <Input
-                  label='Booked bookedQuantity in kg*'
+                  label='Booked Quantity in kg*'
                   name='bookedQuantity'
                   id='bookedQuantity'
-                  placeholder='Enter Booked bookedQuantity'
+                  placeholder='Enter Booked Quantity'
                 />
               </div>
               <div className='max-w-[360px] w-full'>
