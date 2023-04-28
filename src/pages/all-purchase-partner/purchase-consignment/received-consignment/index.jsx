@@ -62,9 +62,7 @@ const ReceivedConsignment = () => {
       Cell: ({ row }) => {
         return (
           <span>
-            {row.original.billingRate
-              ? '₹' + calculateGST(row.original.billingRate)
-              : '-'}
+            {row.original.billingRate ? '₹' + row.original.billingRate : '-'}
           </span>
         );
       },
@@ -161,6 +159,8 @@ const ReceivedConsignment = () => {
     ['getReceivedConsignments', bookedConsignmentId, entriesValue, pageIndex],
     getReceivedConsignments
   );
+
+  console.log('🚀 ~ file: index.jsx:159 ~ ReceivedConsignment ~ data:', data);
 
   let component = null;
 
@@ -266,7 +266,14 @@ const ReceivedConsignment = () => {
             {
               id: 2,
               name: 'Total payment pending',
-              value: '₹' + data.totalInfo?.pendingPayment,
+              value:
+                // '₹' +
+                `₹ ${
+                  +data?.totalInfo?.pendingPayment +
+                  +data?.bookedConsignment.advancePayment -
+                  +data?.bookedConsignment.bookedQuantity *
+                    (+data.bookedConsignment.rate / 10)
+                }`,
             },
             {
               id: 3,

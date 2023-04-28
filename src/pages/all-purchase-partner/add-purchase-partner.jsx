@@ -31,65 +31,6 @@ const AddPurchaseConsignment = () => {
           <h1 className='text-xl font-medium'>Add new Soudha Partner</h1>
         </div>
         <PurchasePartnerForm apiFunction={addPartner} />
-        {/* <div className='p-6'>
-          <Formik
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-            onSubmit={(values, { resetForm }) => {
-              mutate(values);
-              console.log(
-                '🚀 ~ file: add-purchase-soudha.jsx:46 ~ AddPurchaseSConsignment~ values:',
-                values
-              );
-            }}
-          >
-            <Form className='form px-3'>
-              <Input
-                label='Partner Name*'
-                name='firstName'
-                id='firstName'
-                placeholder='Enter Partner name'
-              />
-              <Input
-                label='Location*'
-                name='location'
-                id='location'
-                placeholder='Enter Location'
-              />
-              <Input
-                label='Whatsapp Number*'
-                name='whatsApp'
-                id='whatsApp'
-                placeholder='Enter Whatsapp number'
-              />
-              <CustomSelect
-                name='status'
-                id='status'
-                label='Status*'
-                placeholder='Status'
-                options={[
-                  { id: 1, value: 'ACTIVE', label: 'Active' },
-                  { id: 2, value: 'INACTIVE', label: 'Inactive' },
-                ]}
-              />
-
-              <div className='flex space-x-3 justify-end mt-8'>
-                <button
-                  onClick={() => {
-                    navigate(-1);
-                  }}
-                  disabled={isLoading}
-                  type='button'
-                  className='py-[11px]  font-medium max-w-[98.31px] text-sm  rounded-md px-5 bg-black bg-opacity-20'
-                  to='/all-purchase-partner'
-                >
-                  Close
-                </button>
-                <SubmitBtn text='Submit' isSubmitting={isLoading} />
-              </div>
-            </Form>
-          </Formik>
-        </div> */}
       </div>
     </div>
   );

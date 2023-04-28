@@ -52,6 +52,7 @@ const PendingConsignment = lazy(() => import('../pages/pending-consignment'));
 // Accounts
 const Account = lazy(() => import('../pages/account'));
 const AddUser = lazy(() => import('../pages/account/add-user'));
+const EditUser = lazy(() => import('../pages/account/edit-user'));
 // 404
 const Error404 = lazy(() => import('../pages/404'));
 
@@ -131,6 +132,7 @@ const DefaultLayout = () => {
                 />
                 <Route path='/account' element={<Account />} />
                 <Route path='/account/add-user' element={<AddUser />} />
+                <Route path='/account/edit-user' element={<EditUser />} />
                 <Route path='/404' element={<Error404 />} />
                 <Route
                   path='*'

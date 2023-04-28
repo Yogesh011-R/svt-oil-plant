@@ -3,6 +3,7 @@ import AddBtn from './AddBtn';
 import ExportBtn from './ExportBtn';
 import SelectEntries from './SelectEntries';
 import TableSearch from './TableSearch';
+import { JsonToCsv, useJsonToCsv } from 'react-json-csv';
 
 const TableHeader = ({
   title,
@@ -17,7 +18,9 @@ const TableHeader = ({
   detailsData,
   morePartnerDetails,
   linkState,
+  downloadInfo,
 }) => {
+  const { saveAsCsv } = useJsonToCsv();
   return (
     <div>
       <div className='p-[18px] border-b'>
@@ -77,7 +80,13 @@ const TableHeader = ({
               <h2>Export</h2>
               <div className='flex space-x-3 items-center'>
                 <ExportBtn text='PDF' />
-                <ExportBtn text='CVS' />
+                <ExportBtn
+                  text='CVS'
+                  onClick={() => {
+                    if (!downloadInfo) return;
+                    saveAsCsv({ ...downloadInfo });
+                  }}
+                />
                 <ExportBtn text='EXCEL' />
                 {whatsApp && <ExportBtn text='WHATSAPP' />}
               </div>

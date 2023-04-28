@@ -75,7 +75,7 @@ const PurchaseSoudha = () => {
         return (
           <span>
             {row?.original?.totalInfo?.totalPendingConsignment
-              ? '₹' + row?.original?.totalInfo?.totalPendingConsignment
+              ? row?.original?.totalInfo?.totalPendingConsignment
               : '-'}
           </span>
         );
@@ -381,7 +381,7 @@ const PurchaseSoudha = () => {
             },
             {
               id: 4,
-              name: 'Total difference amount',
+              name: 'Total pending consignment',
               value: data?.totalInfo?.totalPendingConsignment,
             },
           ]}

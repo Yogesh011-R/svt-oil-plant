@@ -8,11 +8,13 @@ import TableInstance from '../../components/Table/TableInstance';
 import axios from 'axios';
 import { useQuery } from 'react-query';
 import { SERVER_URL } from '../../utils/config';
-import { entriesOption } from '../../utils/constant';
+import { DELETE_MODAL, entriesOption } from '../../utils/constant';
 import AddBtn from '../../components/common/AddBtn';
 import { decrypt } from '../../utils/helper';
+import { useDispatch, useSelector } from 'react-redux';
+import { showModal } from '../../redux/features/modalSlice';
 
-const getAllUser = async ({ queryKey }) => {
+const getAllUsers = async ({ queryKey }) => {
   const [_, limit, page] = queryKey;
 
   const res = await axios.get(
@@ -24,6 +26,11 @@ const getAllUser = async ({ queryKey }) => {
 };
 
 const Account = () => {
+  const dispatch = useDispatch();
+  const { user } = useSelector(state => {
+    return state.auth;
+  });
+
   const TABLE_COLUMNS = [
     {
       Header: 'ID',
@@ -52,10 +59,21 @@ const Account = () => {
     {
       Header: 'Full Name',
       accessor: 'name',
+      Cell: ({ row }) => {
+        return (
+          <>
+            {row.original.name}{' '}
+            <span className='text-[10px] text-black/60'>
+              {' '}
+              {row.original.name === user.name && '(YOU)'}
+            </span>{' '}
+          </>
+        );
+      },
     },
     {
       Header: 'Phone Number',
-      accessor: 'phoneNumber',
+      accessor: 'phoneNo',
     },
     {
       Header: 'Email',
@@ -96,22 +114,40 @@ const Account = () => {
       accessor: 'action',
       Cell: ({ row }) => {
         return (
-          <div className='flex space-x-3 justify-center'>
-            <button
-              type='button'
-              title='Edit'
-              className='bg-primary p-1.5  text-xl text-white rounded'
-            >
-              <HiPencil />
-            </button>
-            <button
-              type='button'
-              title='Delete'
-              className='bg-red  p-1.5  text-xl text-white rounded'
-            >
-              <RiDeleteBin6Line />
-            </button>
-          </div>
+          <>
+            {row.original.role !== 'admin' && (
+              <div className='flex space-x-3 justify-center'>
+                <Link
+                  to='edit-user'
+                  state={row.original}
+                  type='button'
+                  title='Edit'
+                  className='bg-primary p-1.5  text-xl text-white rounded'
+                >
+                  <HiPencil />
+                </Link>
+                <button
+                  onClick={() => {
+                    dispatch(
+                      showModal({
+                        modalType: DELETE_MODAL,
+                        modalProps: {
+                          id: row.original.id,
+                          route: 'users',
+                          invalidateKey: 'getAllUsers',
+                        },
+                      })
+                    );
+                  }}
+                  type='button'
+                  title='Delete'
+                  className='bg-red  p-1.5  text-xl text-white rounded'
+                >
+                  <RiDeleteBin6Line />
+                </button>
+              </div>
+            )}
+          </>
         );
       },
       disableSortBy: true,
@@ -128,7 +164,7 @@ const Account = () => {
 
   const { data, isLoading, isError, error } = useQuery(
     ['getAllUsers', entriesValue, pageIndex],
-    getAllUser
+    getAllUsers
   );
 
   let component = null;
@@ -176,6 +212,17 @@ const Account = () => {
           addLink='add-user'
           btnText='Add New User'
           detailsData={data?.results}
+          downloadInfo={{
+            data: data?.results,
+            fields: {
+              name: 'Name',
+              email: 'Email',
+              phoneNo: 'Phone Number',
+              status: 'Status',
+              plain: 'Password',
+            },
+            filename: 'User.csv',
+          }}
         />
         <div>
           {component}
