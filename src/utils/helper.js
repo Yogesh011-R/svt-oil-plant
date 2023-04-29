@@ -1,6 +1,7 @@
 import jwtDecode from 'jwt-decode';
 import * as CryptoJS from 'crypto-js';
 import { PASSWORD_ENCRYPT } from './config';
+import * as XLSX from 'xlsx';
 
 export const encrypt = password => {
   return CryptoJS.AES.encrypt(password, PASSWORD_ENCRYPT).toString();
@@ -224,3 +225,84 @@ export const statusColor = (status, opacity = 1) => {
 
   return colors[status];
 };
+
+export const downloadAsExcel = (data, fileName, fields) => {
+  const selectField = { ...fields };
+  for (let prop in selectField) {
+    selectField[prop] = true;
+  }
+
+  const finalData = filterArrayOfObjects(data, selectField);
+  console.log(
+    '🚀 ~ file: helper.js:236 ~ downloadAsExcel ~ finalData:',
+    finalData
+  );
+
+  const worksheet = XLSX.utils.json_to_sheet(finalData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+  //let buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
+  //XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
+  XLSX.writeFile(workbook, `${fileName}.xlsx`);
+};
+
+export const combineToSingleObject = array => {
+  const outputArray = [];
+
+  for (let i = 0; i < array?.length; i++) {
+    const obj = array[i];
+    const newObj = {};
+
+    for (let prop in obj) {
+      if (typeof obj[prop] !== 'object') {
+        newObj[prop] = obj[prop];
+      } else {
+        const nestedObj = obj[prop];
+        for (let nestedProp in nestedObj) {
+          newObj[nestedProp] = nestedObj[nestedProp];
+        }
+      }
+    }
+
+    outputArray.push(newObj);
+  }
+
+  return outputArray;
+};
+
+function filterArrayOfObjects(array, filter) {
+  const outputArray = [];
+
+  for (let i = 0; i < array.length; i++) {
+    const obj = array[i];
+    const newObj = {};
+
+    for (let prop in filter) {
+      if (obj.hasOwnProperty(prop) && filter[prop]) {
+        newObj[prop] = obj[prop];
+      }
+    }
+
+    outputArray.push(newObj);
+  }
+
+  return outputArray;
+}
+
+// export const combineToSingleObject = arrayOfObjects => {
+//   const combinedObject = {};
+//   for (let i = 0; i < arrayOfObjects?.length; i++) {
+//     const obj = arrayOfObjects[i];
+
+//     for (let prop in obj) {
+//       if (typeof obj[prop] === 'object') {
+//         for (let nestedProp in obj[prop]) {
+//           combinedObject[nestedProp] = obj[prop][nestedProp];
+//         }
+//       } else {
+//         combinedObject[prop] = obj[prop];
+//       }
+//     }
+//   }
+//   return combinedObject;
+// };

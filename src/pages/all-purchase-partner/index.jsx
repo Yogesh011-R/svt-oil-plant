@@ -15,6 +15,7 @@ import { SERVER_URL } from '../../utils/config';
 import { DELETE_MODAL, entriesOption } from '../../utils/constant';
 import { useDispatch } from 'react-redux';
 import { showModal } from '../../redux/features/modalSlice';
+import { combineToSingleObject } from '../../utils/helper';
 
 const getAllPartners = async ({ queryKey }) => {
   const [_, limit, page] = queryKey;
@@ -190,7 +191,6 @@ const PurchaseSoudha = () => {
     getAllPartners,
     {
       select: data => {
-        console.log('🚀 ~ file: index.jsx:193 ~ PurchaseSoudha ~ data:', data);
         const newResult = data.partners.results.map((item, idx) => {
           return {
             ...item,
@@ -260,6 +260,19 @@ const PurchaseSoudha = () => {
           setEntriesValue={setEntriesValue}
           addLink='add-purchase-partner'
           btnText='Add new Partner'
+          downloadInfo={{
+            data: combineToSingleObject(data?.partners.results),
+            fields: {
+              tableId: 'ID',
+              partnerName: 'Name',
+              location: 'Email',
+              whatsappNo: 'Whats App Number',
+              status: 'Status',
+              averageRate: 'Average Rate',
+              totalBookQuantity: 'Total Book Quantity',
+            },
+            filename: 'Purchase Soudha Partners.csv',
+          }}
         />
 
         <div>

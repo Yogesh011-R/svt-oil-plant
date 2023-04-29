@@ -17,6 +17,7 @@ import { format } from 'date-fns';
 import { DELETE_MODAL, entriesOption } from '../../../utils/constant';
 import { showModal } from '../../../redux/features/modalSlice';
 import { useDispatch } from 'react-redux';
+import { combineToSingleObject } from '../../../utils/helper';
 
 const getBookedConsignments = async ({ queryKey }) => {
   const [_, partnerId, page, limit] = queryKey;
@@ -127,7 +128,7 @@ const PurchaseSoudha = () => {
               </div>
             ) : (
               <div className='bg-green text-green  bg-opacity-20  w-fit px-5 p-1 rounded-full text-[11px] mx-auto'>
-                Complete
+                Completed
               </div>
             )}
           </div>
@@ -276,6 +277,11 @@ const PurchaseSoudha = () => {
     return <p className=' py-10 text-center'>Loading..</p>;
   }
 
+  console.log(
+    '🚀 ~ file: index.jsx:329 ~ PurchaseSoudha ~ data?.consignments.results:',
+    data?.consignments.results
+  );
+
   return (
     <div>
       <BreadCrumb
@@ -308,53 +314,19 @@ const PurchaseSoudha = () => {
           whatsApp={true}
           btnText='Add new booking'
           addLink='add-consignment'
+          downloadInfo={{
+            data: combineToSingleObject(data?.consignments.results),
+            fields: {
+              oilType: 'Oil Type',
+              bookedQuantity: 'Booked Quantity in KG',
+              rate: 'Rate',
+              differenceAmount: 'Difference Amount',
+              status: 'Status',
+            },
+            filename: 'Booked Purchase consignments.csv',
+          }}
         />
-        <div>
-          {/* <TableInstance
-            cSortBy={cSortBy}
-            cSetSortBy={cSetSortBy}
-            desc={desc}
-            setDesc={setDesc}
-            tableData={[
-              {
-                id: 1,
-                oilType: 'SO',
-                quantityInKg: '50000',
-                rate: '955.00',
-                differenceAmount: '100000',
-                pendingConsignment: '100000',
-                bookingDate: 'Sat,20 Apr 2020',
-                partnerStatus: true,
-                soudhaStatus: false,
-              },
-              {
-                id: 2,
-                oilType: 'SO',
-                quantityInKg: '20000',
-                rate: '975.00',
-                differenceAmount: '0',
-                pendingConsignment: '0',
-                bookingDate: 'Sat,21 Apr 2020',
-
-                partnerStatus: false,
-                soudhaStatus: true,
-              },
-              {
-                id: 3,
-                oilType: 'SO',
-                quantityInKg: '60000',
-                rate: '695.00',
-                differenceAmount: '0',
-                pendingConsignment: '0',
-                bookingDate: 'Sat,22 Apr 2020',
-                partnerStatus: true,
-                soudhaStatus: true,
-              },
-            ]}
-            columnName={TABLE_COLUMNS}
-          /> */}
-          {component}
-        </div>
+        <div>{component}</div>
       </section>
       {data?.totalInfo && (
         <TotalDetails
@@ -362,7 +334,7 @@ const PurchaseSoudha = () => {
             {
               id: 1,
               name: 'Total kgs',
-              value: data?.totalInfo?.totalBookQuantity,
+              value: data?.totalInfo?.totalBookQuantity || '-',
             },
             {
               id: 2,
@@ -371,7 +343,7 @@ const PurchaseSoudha = () => {
                 '₹' +
                 parseFloat(
                   data?.totalInfo?.averageRate /
-                    data?.totalInfo?.totalBookQuantity
+                    data?.totalInfo?.totalBookQuantity || 0
                 ).toFixed(2),
             },
             {

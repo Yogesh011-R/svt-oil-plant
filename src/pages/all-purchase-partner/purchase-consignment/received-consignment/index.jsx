@@ -12,7 +12,7 @@ import { useQuery } from 'react-query';
 import AddBtn from '../../../../components/common/AddBtn';
 import { DELETE_MODAL, entriesOption } from '../../../../utils/constant';
 import { format } from 'date-fns';
-import { calculateGST } from '../../../../utils/helper';
+import { calculateGST, combineToSingleObject } from '../../../../utils/helper';
 import { showModal } from '../../../../redux/features/modalSlice';
 import { useDispatch } from 'react-redux';
 
@@ -160,7 +160,10 @@ const ReceivedConsignment = () => {
     getReceivedConsignments
   );
 
-  console.log('🚀 ~ file: index.jsx:159 ~ ReceivedConsignment ~ data:', data);
+  console.log(
+    '🚀 ~ file: index.jsx:268 ~ ReceivedConsignment ~ combineToSingleObject(data?.receivedConsignments.results):',
+    combineToSingleObject(data?.receivedConsignments.results)
+  );
 
   let component = null;
 
@@ -250,6 +253,21 @@ const ReceivedConsignment = () => {
           btnText='Add new received Soudha '
           addLink='add-received-soudha'
           linkState={{ pricePerKG: data.bookedConsignment.rate }}
+          downloadInfo={{
+            data: combineToSingleObject(data?.receivedConsignments.results),
+            fields: {
+              billNo: 'Bill No',
+              billingQuantity: 'Booked Quantity in KG',
+              billingRate: 'Billing Rate',
+              difference: 'Difference Amount',
+              totalBillingAmount: 'Total Billing Amount',
+              vehicleNo: 'Vehicle No',
+              unloadQuantity: 'Unload Quantity',
+              shortQuantity: 'Short Quantity',
+              payment: 'Payment',
+            },
+            filename: 'Booked Purchase consignments.csv',
+          }}
         />
         <div>{component}</div>
       </section>

@@ -221,7 +221,7 @@ const Account = () => {
               status: 'Status',
               plain: 'Password',
             },
-            filename: 'User.csv',
+            filename: 'Users.csv',
           }}
         />
         <div>

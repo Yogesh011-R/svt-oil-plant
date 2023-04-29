@@ -28,8 +28,10 @@ const AccountForm = ({ apiFunction, editValue, pricePerKG }) => {
   };
   const validationSchema = Yup.object({
     name: Yup.string().required('Name is required'),
-    phoneNo: Yup.string(),
-    email: Yup.string().email().required('Email is required'),
+    phoneNo: Yup.number().typeError('Phone must be a number'),
+    email: Yup.string()
+      .email('Must be a valid email')
+      .required('Email is required'),
     status: Yup.string(),
     password: Yup.string().required('Password is required'),
     passwordConfirm: Yup.string()
@@ -90,6 +92,7 @@ const AccountForm = ({ apiFunction, editValue, pricePerKG }) => {
 
         mutate(values);
       }}
+      validateOnMount={editValue && true}
     >
       {formik => {
         const {
@@ -118,6 +121,7 @@ const AccountForm = ({ apiFunction, editValue, pricePerKG }) => {
                   name='phoneNo'
                   id='phoneNo'
                   placeholder='Enter phone number'
+                  type='number'
                 />
               </div>
               <div className=' w-full'>
