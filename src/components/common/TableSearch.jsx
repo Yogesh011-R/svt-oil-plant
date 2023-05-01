@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { HiOutlineSearch } from 'react-icons/hi';
+import { useDebouncedEffect } from '../../hooks/useDebounce';
+import { useDebouncedCallback } from 'use-debounce';
 
 const TableSearch = ({ value, setValue }) => {
   return (
@@ -10,6 +12,10 @@ const TableSearch = ({ value, setValue }) => {
         onChange={e => {
           setValue(e.target.value);
         }}
+        // onChange={e => {
+        //   onChange={(e) => debounced(e.target.value)}
+        //   setSearchInput(e.target.value);
+        // }}
         className='p-[13px] w-full  text-xs border border-black border-opacity-30 rounded-md focus:outline-none'
         placeholder='Search for anything....'
       />

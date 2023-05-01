@@ -76,9 +76,10 @@ const TableHeader = ({
           </div>
         </div>
       )}
-      {detailsData?.length > 0 && (
-        <div className='px-[18px] py-8'>
-          <div className='flex items-center justify-between'>
+      {/* {(detailsData?.length || searchValue) > 0 && ( */}
+      <div className='px-[18px] py-8'>
+        <div className='flex items-center justify-between'>
+          {detailsData?.length > 0 ? (
             <div className='flex space-x-5 items-center'>
               <h2>Export</h2>
               <div className='flex space-x-3 items-center'>
@@ -104,24 +105,27 @@ const TableHeader = ({
                 {/* {whatsApp && <ExportBtn text='WHATSAPP' />} */}
               </div>
             </div>
-            {addLink && (
-              <div>
-                <AddBtn text={btnText} link={addLink} state={linkState} />
-              </div>
-            )}
-          </div>
-          <div className='my-5 flex items-center justify-between'>
-            <div className='flex space-x-7 items-center'>
-              <h2>Show</h2>
-              <SelectEntries
-                entries={entriesValue}
-                setEntriesValue={setEntriesValue}
-              />
+          ) : (
+            <div></div>
+          )}
+          {addLink && (
+            <div>
+              <AddBtn text={btnText} link={addLink} state={linkState} />
             </div>
-            <TableSearch value={searchValue} setValue={setSearchValue} />
-          </div>
+          )}
         </div>
-      )}
+        <div className='my-5 flex items-center justify-between'>
+          <div className='flex space-x-7 items-center'>
+            <h2>Show</h2>
+            <SelectEntries
+              entries={entriesValue}
+              setEntriesValue={setEntriesValue}
+            />
+          </div>
+          <TableSearch value={searchValue} setValue={setSearchValue} />
+        </div>
+      </div>
+      {/* )} */}
     </div>
   );
 };

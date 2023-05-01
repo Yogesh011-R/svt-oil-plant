@@ -58,6 +58,11 @@ const PendingConsignment = () => {
     {
       Header: 'Pending  quantity ',
       accessor: 'pendingQuantity',
+      Cell: ({ row }) => {
+        return (
+          <span>{row.original?.totalInfo?.totalPendingConsignment || '-'}</span>
+        );
+      },
     },
     {
       Header: 'Average rate',
@@ -92,7 +97,42 @@ const PendingConsignment = () => {
 
   const { data, isLoading, isError, error } = useQuery(
     ['getAllPendingConsignment', entriesValue, pageIndex],
-    getAllPendingConsignments
+    getAllPendingConsignments,
+    {
+      select: data => {
+        const newResult = data.pendingConsignments.results.map((item, idx) => {
+          return {
+            ...item,
+            totalInfo: data.receivedConsignTotalInfo.filter(info => {
+              return info.id === item.id;
+            })[0]?.totalInfo,
+          };
+        });
+
+        const totalFu = () => {
+          let totalPendingConsignment = 0;
+          for (let i = 0; i < data?.receivedConsignTotalInfo?.length; i++) {
+            if (data?.receivedConsignTotalInfo[i]?.totalInfo) {
+              totalPendingConsignment =
+                totalPendingConsignment +
+                +data?.receivedConsignTotalInfo[i]?.totalInfo
+                  ?.totalPendingConsignment;
+            }
+          }
+
+          return { totalPendingConsignment };
+        };
+
+        return {
+          ...data,
+          pendingConsignments: {
+            ...data.pendingConsignments,
+            results: newResult,
+          },
+          totalInfo: totalFu(),
+        };
+      },
+    }
   );
 
   let component = null;
@@ -163,15 +203,15 @@ const PendingConsignment = () => {
 
         <div>{component}</div>
       </section>
-      {/* <TotalDetails
+      <TotalDetails
         totalInfo={[
           {
             id: 1,
             name: 'Total Pending consignment',
-            value: '40000',
+            value: `${data?.totalInfo?.totalPendingConsignment || '-'}`,
           },
         ]}
-      /> */}
+      />
     </div>
   );
 };

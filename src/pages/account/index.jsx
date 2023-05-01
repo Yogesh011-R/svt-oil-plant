@@ -13,14 +13,15 @@ import AddBtn from '../../components/common/AddBtn';
 import { decrypt } from '../../utils/helper';
 import { useDispatch, useSelector } from 'react-redux';
 import { showModal } from '../../redux/features/modalSlice';
+import { useDebounce } from 'use-debounce';
 
 const getAllUsers = async ({ queryKey }) => {
-  const [_, limit, page] = queryKey;
+  const [_, limit, page, query] = queryKey;
 
   const res = await axios.get(
     `${SERVER_URL}/users?page=${page + 1}&limit=${
       limit?.value || 10
-    }&sortBy=createdAt:desc`
+    }&sortBy=createdAt:desc&name=${query || ''}`
   );
   return res.data;
 };
@@ -83,8 +84,6 @@ const Account = () => {
       Header: 'Password',
       accessor: 'password',
       Cell: ({ row }) => {
-        console.log('🚀 ~ file: index.jsx:71 ~ Account ~ row:', row);
-
         return <div>{decrypt(row.original.plain)}</div>;
       },
     },
@@ -162,8 +161,10 @@ const Account = () => {
   const [entriesValue, setEntriesValue] = useState(entriesOption[0]);
   const [pageIndex, setPageIndex] = useState(0);
 
+  const [query] = useDebounce(searchValue, 1000);
+
   const { data, isLoading, isError, error } = useQuery(
-    ['getAllUsers', entriesValue, pageIndex],
+    ['getAllUsers', entriesValue, pageIndex, query],
     getAllUsers
   );
 
@@ -177,6 +178,19 @@ const Account = () => {
     );
   } else if (isLoading) {
     component = <p className='mt-6 ml-4 pb-10 text-center'>Loading...</p>;
+  } else if (!data?.results.length) {
+    component = (
+      <p className='mt-6 ml-4 pb-10 text-center'>
+        No user found{' '}
+        {searchValue ? (
+          <span>
+            for the value <span className='font-bold '>{searchValue}</span>
+          </span>
+        ) : (
+          '...'
+        )}
+      </p>
+    );
   } else {
     component = (
       <TableInstance

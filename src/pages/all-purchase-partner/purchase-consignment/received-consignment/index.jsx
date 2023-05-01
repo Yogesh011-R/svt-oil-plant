@@ -102,6 +102,11 @@ const ReceivedConsignment = () => {
     {
       Header: 'Created by',
       accessor: 'createdBy',
+      Cell: ({ row }) => {
+        return (
+          <span className='capitalize'>{row.original?.createdBy?.name}</span>
+        );
+      },
     },
     {
       Header: 'Action',
@@ -158,11 +163,6 @@ const ReceivedConsignment = () => {
   const { data, isLoading, isError, error } = useQuery(
     ['getReceivedConsignments', bookedConsignmentId, entriesValue, pageIndex],
     getReceivedConsignments
-  );
-
-  console.log(
-    '🚀 ~ file: index.jsx:268 ~ ReceivedConsignment ~ combineToSingleObject(data?.receivedConsignments.results):',
-    combineToSingleObject(data?.receivedConsignments.results)
   );
 
   let component = null;

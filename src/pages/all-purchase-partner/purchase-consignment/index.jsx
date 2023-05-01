@@ -113,7 +113,9 @@ const PurchaseSoudha = () => {
       Header: 'Created by',
       accessor: 'createdBy',
       Cell: ({ row }) => {
-        return <h2>{data.partner.partnerName}</h2>;
+        return (
+          <span className='capitalize'>{row.original?.createdBy?.name}</span>
+        );
       },
     },
     {
@@ -276,11 +278,6 @@ const PurchaseSoudha = () => {
   if (isLoading) {
     return <p className=' py-10 text-center'>Loading..</p>;
   }
-
-  console.log(
-    '🚀 ~ file: index.jsx:329 ~ PurchaseSoudha ~ data?.consignments.results:',
-    data?.consignments.results
-  );
 
   return (
     <div>

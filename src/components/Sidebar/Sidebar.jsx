@@ -94,10 +94,6 @@ const sidebarOptions = [
 
 const Sidebar = () => {
   const location = useLocation().pathname;
-  console.log(
-    '🚀 ~ file: Sidebar.jsx:98 ~ Sidebar ~ location:',
-    location.split('/')[1]
-  );
 
   const container = useRef(null);
 

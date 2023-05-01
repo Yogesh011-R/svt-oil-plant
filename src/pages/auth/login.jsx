@@ -28,16 +28,13 @@ const Login = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  console.log('🚀 ~ file: login.jsx:28 ~ Login ~ isSubmitting:', isSubmitting);
 
   const login = async (user, fn) => {
     setIsSubmitting(true);
     try {
       const { data } = await axios.post(`${SERVER_URL}/auth/login`, user);
 
-      console.log('🚀 ~ file: login.jsx:36 ~ login ~ data:', data);
       if (data) {
-        console.log('🚀 ~ file: login.jsx:36 ~ login ~ data:', data);
         setIsSubmitting(false);
         // update state
         // if (!data.user.isActive) {

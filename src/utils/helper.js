@@ -233,16 +233,21 @@ export const downloadAsExcel = (data, fileName, fields) => {
   }
 
   const finalData = filterArrayOfObjects(data, selectField);
-  console.log(
-    '🚀 ~ file: helper.js:236 ~ downloadAsExcel ~ finalData:',
-    finalData
+
+  const updatedArray = finalData.map(obj =>
+    Object.keys(obj).reduce(
+      (acc, key) => ({
+        ...acc,
+        [fields[key] || key]: obj[key],
+      }),
+      {}
+    )
   );
 
-  const worksheet = XLSX.utils.json_to_sheet(finalData);
+  const worksheet = XLSX.utils.json_to_sheet(updatedArray);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-  //let buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
-  //XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
+
   XLSX.writeFile(workbook, `${fileName}.xlsx`);
 };
 

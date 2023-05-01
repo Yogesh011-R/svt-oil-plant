@@ -204,7 +204,6 @@ const PurchaseSoudha = () => {
     }
   );
 
-  console.log('🚀 ~ file: index.jsx:175 ~ PurchaseSoudha ~ data:', data);
 
   let component = null;
 

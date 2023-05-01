@@ -33,8 +33,6 @@ const Modal = ({ modalType, modalProps }) => {
     }
   }
 
-  console.log('🚀 ~ file: Modal.jsx:19 ~ Modal ~ Component:', Component);
-
   useEffect(() => {
     document.body.style.overflow = 'hidden';
 

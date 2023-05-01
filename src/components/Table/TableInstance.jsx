@@ -42,7 +42,8 @@ const TableInstance = ({
 
       data,
       initialState: {
-        hiddenColumns: user.role === 'user' ? ['action'] : [''],
+        hiddenColumns:
+          user.role === 'user' ? ['action', 'createdBy', 'password'] : [''],
         pageSize: cPageSize,
         pageIndex,
         sortBy: cSortBy
