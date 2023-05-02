@@ -4,11 +4,17 @@ import { HiCheck, HiChevronDown, HiChevronUp } from 'react-icons/hi';
 import { classNames } from '../../utils/classNames';
 import { entriesOption } from '../../utils/constant';
 
-const SelectEntries = ({ entries, setEntriesValue }) => {
+const SelectEntries = ({
+  entries,
+  setEntriesValue,
+  setPageIndex,
+  pageIndex,
+}) => {
   return (
     <Listbox
       value={entries}
       onChange={e => {
+        if (pageIndex > 0) setPageIndex(0);
         setEntriesValue(e);
       }}
     >

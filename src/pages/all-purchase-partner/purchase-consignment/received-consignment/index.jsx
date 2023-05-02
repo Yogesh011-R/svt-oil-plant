@@ -237,6 +237,8 @@ const ReceivedConsignment = () => {
           setSearchValue={setSearchValue}
           entriesValue={entriesValue}
           setEntriesValue={setEntriesValue}
+          setPageIndex={setPageIndex}
+          pageIndex={pageIndex}
           partnerDetails={{
             id: data?.bookedConsignment.partnerId.id,
             name: data?.bookedConsignment.partnerId.partnerName,

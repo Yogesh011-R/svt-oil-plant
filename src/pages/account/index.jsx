@@ -223,6 +223,8 @@ const Account = () => {
           setSearchValue={setSearchValue}
           entriesValue={entriesValue}
           setEntriesValue={setEntriesValue}
+          setPageIndex={setPageIndex}
+          pageIndex={pageIndex}
           addLink='add-user'
           btnText='Add New User'
           detailsData={data?.results}

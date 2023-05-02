@@ -302,6 +302,8 @@ const PurchaseSoudha = () => {
           setSearchValue={setSearchValue}
           entriesValue={entriesValue}
           setEntriesValue={setEntriesValue}
+          setPageIndex={setPageIndex}
+          pageIndex={pageIndex}
           partnerDetails={{
             id: data?.partner?.tableId,
             name: data?.partner?.partnerName,

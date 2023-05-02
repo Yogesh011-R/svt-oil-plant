@@ -1,15 +1,14 @@
 import { useField, useFormikContext } from 'formik';
 import React from 'react';
-import Select, { components } from 'react-select';
+import AsyncSelect from 'react-select/async';
 import ErrorBox from './ErrorBox';
 
-const CustomSelect = ({
+const CustomAsyncSelect = ({
   label,
   type,
   placeholder,
-  options,
   disabled,
-  isLoading,
+  defaultOptions,
   ...props
 }) => {
   const [field, meta] = useField({ ...props, type });
@@ -21,11 +20,11 @@ const CustomSelect = ({
       <label className={`${disabled && 'opacity-60'} text-sm block mb-2 text`}>
         {label}
       </label>
-      <Select
+      <AsyncSelect
         {...field}
         {...props}
         isDisabled={disabled}
-        options={options}
+        defaultOptions={defaultOptions}
         onChange={value => {
           setFieldValue(field.name, value.value);
         }}
@@ -85,4 +84,4 @@ const CustomSelect = ({
   );
 };
 
-export default CustomSelect;
+export default CustomAsyncSelect;

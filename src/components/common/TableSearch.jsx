@@ -3,13 +3,14 @@ import { HiOutlineSearch } from 'react-icons/hi';
 import { useDebouncedEffect } from '../../hooks/useDebounce';
 import { useDebouncedCallback } from 'use-debounce';
 
-const TableSearch = ({ value, setValue }) => {
+const TableSearch = ({ value, setValue, setPageIndex, pageIndex }) => {
   return (
     <div className='max-w-[230px] w-full relative'>
       <input
         type='text'
         value={value}
         onChange={e => {
+          if (pageIndex > 0) setPageIndex(0);
           setValue(e.target.value);
         }}
         // onChange={e => {

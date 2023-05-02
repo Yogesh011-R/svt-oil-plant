@@ -16,13 +16,14 @@ import { DELETE_MODAL, entriesOption } from '../../utils/constant';
 import { useDispatch } from 'react-redux';
 import { showModal } from '../../redux/features/modalSlice';
 import { combineToSingleObject } from '../../utils/helper';
+import { useDebounce } from 'use-debounce';
 
 const getAllPartners = async ({ queryKey }) => {
-  const [_, limit, page] = queryKey;
+  const [_, limit, page, query] = queryKey;
   const res = await axios.get(
     `${SERVER_URL}/soudha/partners?page=${page + 1}&limit=${
       limit?.value || 10
-    }&sortBy=createdAt:desc`
+    }&sortBy=createdAt:desc&partnerName=${query}`
   );
 
   return res.data;
@@ -185,9 +186,10 @@ const PurchaseSoudha = () => {
   const [pageIndex, setPageIndex] = useState(0);
   const [searchValue, setSearchValue] = useState('');
   const [entriesValue, setEntriesValue] = useState(entriesOption[0]);
+  const [query] = useDebounce(searchValue, 1000);
 
-  const { data, isLoading, isError, error } = useQuery(
-    ['getAllPartners', entriesValue, pageIndex],
+  const { data, isLoading, isError, error, isFetching } = useQuery(
+    ['getAllPartners', entriesValue, pageIndex, query],
     getAllPartners,
     {
       select: data => {
@@ -204,7 +206,6 @@ const PurchaseSoudha = () => {
     }
   );
 
-
   let component = null;
 
   if (isError) {
@@ -218,10 +219,30 @@ const PurchaseSoudha = () => {
   } else if (!isLoading && !data?.partners?.results.length) {
     component = (
       <div className='py-20 flex flex-col items-center justify-center'>
-        <p className=' text-center mb-5'>No Booking added yet!</p>
-        <div>
-          <AddBtn link='add-purchase-partner' text='Add new Partner' />
-        </div>
+        <p className=' text-center mb-5'>
+          No Booking{' '}
+          {searchValue ? (
+            <span>
+              for the value <span className='font-bold '>{searchValue}</span>
+            </span>
+          ) : (
+            'added yet!'
+          )}{' '}
+        </p>
+        {!searchValue && (
+          <div>
+            <AddBtn link='add-purchase-partner' text='Add new Partner' />
+          </div>
+        )}
+      </div>
+    );
+  } else if (searchValue && isFetching) {
+    component = (
+      <div className='py-20 flex flex-col items-center justify-center'>
+        <span>
+          Searching for the value
+          <span className='font-bold '>{searchValue}</span>
+        </span>
       </div>
     );
   } else {
@@ -259,6 +280,8 @@ const PurchaseSoudha = () => {
           setEntriesValue={setEntriesValue}
           addLink='add-purchase-partner'
           btnText='Add new Partner'
+          setPageIndex={setPageIndex}
+          pageIndex={pageIndex}
           downloadInfo={{
             data: combineToSingleObject(data?.partners.results),
             fields: {

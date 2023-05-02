@@ -21,7 +21,10 @@ const TableHeader = ({
   morePartnerDetails,
   linkState,
   downloadInfo,
+  pageIndex,
+  setPageIndex,
 }) => {
+  console.log('🚀 ~ file: TableHeader.jsx:27 ~ pageIndex:', pageIndex);
   const { saveAsCsv } = useJsonToCsv();
 
   return (
@@ -120,9 +123,16 @@ const TableHeader = ({
             <SelectEntries
               entries={entriesValue}
               setEntriesValue={setEntriesValue}
+              setPageIndex={setPageIndex}
+              pageIndex={pageIndex}
             />
           </div>
-          <TableSearch value={searchValue} setValue={setSearchValue} />
+          <TableSearch
+            setPageIndex={setPageIndex}
+            pageIndex={pageIndex}
+            value={searchValue}
+            setValue={setSearchValue}
+          />
         </div>
       </div>
       {/* )} */}

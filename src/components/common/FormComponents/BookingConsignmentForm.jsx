@@ -1,18 +1,34 @@
 import { Form, Formik } from 'formik';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import DatePicker from '../Form/DatePicker';
 import CustomSelect from '../Form/CustomSelect';
 import Input from '../Form/Input';
 import SubmitBtn from '../Form/SubmitBtn';
 import * as Yup from 'yup';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { addToast } from '../../../redux/features/toastSlice';
 import { ERROR, SUCCESS } from '../../../utils/constant';
 import { handleError } from '../../../utils/helper';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import { SERVER_URL } from '../../../utils/config';
+import CustomAsyncSelect from '../Form/CustomAsyncSelect';
+import AsyncSelect from 'react-select/async';
 
 const BookingConsignmentForm = ({ apiFunction, editValue }) => {
+  const getOilTypes = async () => {
+    const res = await axios.get(`${SERVER_URL}/soudha/oilType`);
+    // const oilTypes = res.data.oilTypes;
+    // const data = oilTypes?.map(({ oilName, id }) => ({
+    //   id: id,
+    //   value: oilName,
+    //   label: oilName,
+    // }));
+
+    // return data;
+    return res.data;
+  };
   const navigate = useNavigate();
   const { partnerId } = useParams();
   const queryClient = useQueryClient();
@@ -26,6 +42,7 @@ const BookingConsignmentForm = ({ apiFunction, editValue }) => {
     { id: 3, label: 'SOYABEAN OIL', value: 'SOYABEAN OIL' },
     { id: 4, label: 'NUT OIL', value: 'NUT OIL' },
   ]);
+
   const initialValues = {
     partnerId,
     bookingDate: editValue ? editValue.bookingDate : new Date(),
@@ -45,6 +62,26 @@ const BookingConsignmentForm = ({ apiFunction, editValue }) => {
     rate: Yup.string().required('Rate is required'),
     advancePayment: Yup.string(),
   });
+
+  const {
+    data: oilTypesData,
+    isError,
+    isLoading: isLoadingOilTypes,
+  } = useQuery(['getOilTypes'], getOilTypes);
+
+  useEffect(() => {
+    if (isLoadingOilTypes) return;
+
+    setOilTypes(
+      oilTypesData?.oilTypes?.map(item => {
+        return {
+          id: item.id,
+          label: item.oilName,
+          value: item.oilName,
+        };
+      })
+    );
+  }, [oilTypesData, isLoadingOilTypes]);
 
   const { mutate, data, error, isLoading } = useMutation({
     mutationFn: apiFunction,
@@ -69,6 +106,32 @@ const BookingConsignmentForm = ({ apiFunction, editValue }) => {
       );
     },
   });
+
+  const addOilType = async data => {
+    const finalData = {
+      oilName: data,
+    };
+    try {
+      const res = await axios.post(`${SERVER_URL}/soudha/oilType`, finalData);
+      queryClient.invalidateQueries('getOilTypes');
+      dispatch(
+        addToast({
+          kind: SUCCESS,
+          msg: `Oil Type added successfully`,
+        })
+      );
+    } catch (error) {
+      const message = handleError(error);
+
+      dispatch(
+        addToast({
+          kind: ERROR,
+          msg: message,
+        })
+      );
+    }
+  };
+
   return (
     <div className='p-6'>
       <Formik
@@ -110,11 +173,14 @@ const BookingConsignmentForm = ({ apiFunction, editValue }) => {
               <div className='flex  space-x-3'>
                 <div className='max-w-[360px] w-full '>
                   <CustomSelect
+                    cacheOptions
                     name='oilType'
                     id='oilType'
                     label='Oil type/name*'
                     placeholder='Select Oil type/name'
                     options={oilTypes}
+
+                    // defaultOptions={oilTypes}
                   />
                 </div>
                 <div>
@@ -196,30 +262,32 @@ const BookingConsignmentForm = ({ apiFunction, editValue }) => {
                           'newOilType',
                           'NewOilType is required'
                         );
-                      if (
-                        oilTypes.some(item => {
-                          return (
-                            item.value.toLowerCase() ===
-                            values.newOilType.toLowerCase()
-                          );
-                        })
-                      ) {
-                        return setFieldError(
-                          'newOilType',
-                          'Oil Type already exists'
-                        );
-                      }
 
-                      setOilTypes(prev => {
-                        return [
-                          ...prev,
-                          {
-                            id: new Date().valueOf(),
-                            value: values.newOilType.toUpperCase(),
-                            label: values.newOilType.toUpperCase(),
-                          },
-                        ];
-                      });
+                      addOilType(values.newOilType);
+                      // if (
+                      //   oilTypes.some(item => {
+                      //     return (
+                      //       item.value.toLowerCase() ===
+                      //       values.newOilType.toLowerCase()
+                      //     );
+                      //   })
+                      // ) {
+                      //   return setFieldError(
+                      //     'newOilType',
+                      //     'Oil Type already exists'
+                      //   );
+                      // }
+
+                      // setOilTypes(prev => {
+                      //   return [
+                      //     ...prev,
+                      //     {
+                      //       id: new Date().valueOf(),
+                      //       value: values.newOilType.toUpperCase(),
+                      //       label: values.newOilType.toUpperCase(),
+                      //     },
+                      //   ];
+                      // });
                       setFieldValue('newOilType', '');
                       setShowAddNewOil(prev => !prev);
                     }}
