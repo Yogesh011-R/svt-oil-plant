@@ -7,6 +7,7 @@ import { logoutUser, setCurrentUser } from '../redux/features/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { SERVER_URL } from '../utils/config';
 import Modal from '../components/Modal/Modal';
+import axios from 'axios';
 
 // @Lazy import
 // Home
@@ -56,28 +57,29 @@ const EditUser = lazy(() => import('../pages/account/edit-user'));
 // 404
 const Error404 = lazy(() => import('../pages/404'));
 
-// const getUser = async ({ queryKey }) => {
-//   const res = await axios.get(`${SERVER_URL}/users/getDetails`);
-//   return res.data;
-// };
+const getUser = async ({ queryKey }) => {
+  const res = await axios.get(`${SERVER_URL}/users/getDetails`);
+  return res.data;
+};
 
 const DefaultLayout = () => {
   const dispatch = useDispatch();
 
-  // const { data, isLoading, isError, error } = useQuery(
-  //   [`currentUser`, user],
-  //   getUser,
-  //   {
-  //     onSuccess: user => {
-  //       if (!user.isActive) {
-  //         return dispatch(logoutUser());
-  //       }
+  const { data, isLoading, isError, error } = useQuery(
+    [`currentUser`],
+    getUser,
+    {
+      onSuccess: user => {
+        // if (!user.isActive) {
+        //   return dispatch(logoutUser());
+        // }
 
-  //       dispatch(setCurrentUser(user));
-  //     },
-  //     refetchInterval: 150000, // 2.5 min
-  //   }
-  // );
+        dispatch(setCurrentUser(user));
+      },
+      refetchInterval: 150000, // 2.5 min
+    }
+  );
+
   const modal = useSelector(state => state.modal);
   return (
     <>

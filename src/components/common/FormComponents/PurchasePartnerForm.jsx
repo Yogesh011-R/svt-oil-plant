@@ -118,7 +118,9 @@ const PurchasePartnerForm = ({ apiFunction, values }) => {
           <div className='flex space-x-3 justify-end mt-8'>
             <button
               onClick={() => {
-                navigate(-1);
+                navigate('/all-purchase-partner', {
+                  replace: true,
+                });
               }}
               disabled={isLoading}
               type='button'

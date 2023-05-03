@@ -24,7 +24,7 @@ const getBookedConsignments = async ({ queryKey }) => {
   const res = await axios.get(
     `${SERVER_URL}/soudha/consignment/${partnerId}?page=${page + 1}&limit=${
       limit?.value || 10
-    }&sortBy=createdAt:desc`
+    }&sortBy=status:desc,updatedAt:desc`
   );
 
   return res.data;
@@ -186,10 +186,9 @@ const PurchaseSoudha = () => {
   const [searchValue, setSearchValue] = useState('');
   const [entriesValue, setEntriesValue] = useState(entriesOption[0]);
 
-  const [extraTotalInfo, setExtraTotalInfo] = useState({
-    totalDifferencesAmount: 0,
-    totalPendingConsignment: 0,
-  });
+  const [startDate, setStartDate] = useState(null);
+
+  const [endDate, setEndDate] = useState(null);
 
   const { data, isLoading, isError, error } = useQuery(
     ['getBookedConsignments', partnerId, pageIndex, entriesValue],
@@ -324,10 +323,50 @@ const PurchaseSoudha = () => {
             },
             filename: 'Booked Purchase consignments.csv',
           }}
+          dateFilter={true}
+          startDate={startDate}
+          endDate={endDate}
+          setEndDate={setEndDate}
+          setStartDate={setStartDate}
+          detailInfo={
+            <>
+              {data?.totalInfo && (
+                <TotalDetails
+                  totalInfo={[
+                    {
+                      id: 1,
+                      name: 'Total kgs',
+                      value: data?.totalInfo?.totalBookQuantity || '-',
+                    },
+                    {
+                      id: 2,
+                      name: 'Average rate',
+                      value:
+                        '₹' +
+                        parseFloat(
+                          data?.totalInfo?.averageRate /
+                            data?.totalInfo?.totalBookQuantity || 0
+                        ).toFixed(2),
+                    },
+                    {
+                      id: 3,
+                      name: 'Total difference amount',
+                      value: '₹' + data?.totalInfo?.differenceAmount,
+                    },
+                    {
+                      id: 4,
+                      name: 'Total pending consignment',
+                      value: data?.totalInfo?.totalPendingConsignment,
+                    },
+                  ]}
+                />
+              )}
+            </>
+          }
         />
         <div>{component}</div>
       </section>
-      {data?.totalInfo && (
+      {/* {data?.totalInfo && (
         <TotalDetails
           totalInfo={[
             {
@@ -357,7 +396,7 @@ const PurchaseSoudha = () => {
             },
           ]}
         />
-      )}
+      )} */}
     </div>
   );
 };

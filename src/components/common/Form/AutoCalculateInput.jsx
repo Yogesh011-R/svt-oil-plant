@@ -1,12 +1,38 @@
 import React, { useEffect, useState } from 'react';
-import { Field, useField } from 'formik';
+import { Field, useField, useFormikContext } from 'formik';
 import ErrorBox from './ErrorBox';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 
-const Input = ({ label, type, placeholder, ...props }) => {
+const AutoCalculateInput = ({
+  label,
+  type,
+  placeholder,
+
+  ...props
+}) => {
   const [field, meta, setFn] = useField({ ...props, type });
+  const { values, setFieldValue, setTouched } = useFormikContext();
 
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    // totalBillingAmount
+    const totalBillingAmount =
+      +values.billingQuantity * (+values.billingRate / 10);
+
+    const withGST = totalBillingAmount * (values.gst / 100);
+
+    setFieldValue(
+      'totalBillingAmount',
+      totalBillingAmount + withGST - +values.otherAmount || ''
+    );
+    //EO totalBillingAmount
+
+    //Unload Amount
+    const shortAmount = +values.billingQuantity - +values.unloadQuantity;
+
+    setFieldValue('shortQuantity', shortAmount || '');
+  }, [values]);
 
   return (
     <div className='form-group  mb-5 relative'>
@@ -35,4 +61,4 @@ const Input = ({ label, type, placeholder, ...props }) => {
   );
 };
 
-export default Input;
+export default AutoCalculateInput;

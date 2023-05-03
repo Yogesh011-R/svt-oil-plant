@@ -51,6 +51,7 @@ const BookingConsignmentForm = ({ apiFunction, editValue }) => {
     bookedQuantity: editValue ? editValue.bookedQuantity : '',
     rate: editValue ? editValue.rate : '',
     advancePayment: editValue ? editValue.advancePayment : '',
+    status: editValue ? editValue.status : 'pending',
   };
   const validationSchema = Yup.object({
     bookingDate: Yup.string('Please Select a Date').required(
@@ -179,6 +180,7 @@ const BookingConsignmentForm = ({ apiFunction, editValue }) => {
                     label='Oil type/name*'
                     placeholder='Select Oil type/name'
                     options={oilTypes}
+                    disabled={isLoading}
 
                     // defaultOptions={oilTypes}
                   />
@@ -305,6 +307,7 @@ const BookingConsignmentForm = ({ apiFunction, editValue }) => {
                   name='bookedQuantity'
                   id='bookedQuantity'
                   placeholder='Enter Booked Quantity'
+                  disabled={isLoading}
                 />
               </div>
               <div className='max-w-[360px] w-full'>
@@ -313,6 +316,7 @@ const BookingConsignmentForm = ({ apiFunction, editValue }) => {
                   name='rate'
                   id='rate'
                   placeholder='Enter rate for 10 kg'
+                  disabled={isLoading}
                 />
               </div>
 
@@ -322,13 +326,29 @@ const BookingConsignmentForm = ({ apiFunction, editValue }) => {
                   name='advancePayment'
                   id='advancePayment'
                   placeholder='Enter paid amount'
+                  disabled={isLoading}
+                />
+              </div>
+              <div className='max-w-[360px] w-full '>
+                <CustomSelect
+                  name='status'
+                  id='status'
+                  label='Status*'
+                  placeholder='Status'
+                  disabled={isLoading}
+                  options={[
+                    { id: 1, value: 'completed', label: 'Completed' },
+                    { id: 2, value: 'pending', label: 'Pending' },
+                  ]}
                 />
               </div>
 
               <div className='flex space-x-3 justify-end mt-8 max-w-[360px] w-full'>
                 <button
                   onClick={() => {
-                    navigate(`/all-purchase-partner/${partnerId}`);
+                    navigate(`/all-purchase-partner/${partnerId}`, {
+                      replace: true,
+                    });
                   }}
                   disabled={isLoading}
                   type='button'

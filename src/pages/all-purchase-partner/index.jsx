@@ -23,7 +23,7 @@ const getAllPartners = async ({ queryKey }) => {
   const res = await axios.get(
     `${SERVER_URL}/soudha/partners?page=${page + 1}&limit=${
       limit?.value || 10
-    }&sortBy=createdAt:desc&partnerName=${query}`
+    }&sortBy=soudhaStatus:desc,updatedAt:desc&partnerName=${query}`
   );
 
   return res.data;
@@ -129,7 +129,7 @@ const PurchaseSoudha = () => {
       Cell: ({ row }) => {
         return (
           <div>
-            {row.original.soudhaStatus ? (
+            {row.original.soudhaStatus === 'completed' ? (
               <div className='bg-green text-green  bg-opacity-20  w-fit px-5 p-1 rounded-full text-[11px] mx-auto'>
                 Complete
               </div>
@@ -297,17 +297,7 @@ const PurchaseSoudha = () => {
           }}
         />
 
-        <div>
-          {/* <TableInstance
-            cSortBy={cSortBy}
-            cSetSortBy={cSetSortBy}
-            desc={desc}
-            setDesc={setDesc}
-            tableData={data.partners}
-            columnName={TABLE_COLUMNS}
-          /> */}
-          {component}
-        </div>
+        <div>{component}</div>
       </section>
     </div>
   );

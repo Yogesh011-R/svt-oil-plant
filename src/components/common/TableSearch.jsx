@@ -5,7 +5,7 @@ import { useDebouncedCallback } from 'use-debounce';
 
 const TableSearch = ({ value, setValue, setPageIndex, pageIndex }) => {
   return (
-    <div className='max-w-[230px] w-full relative'>
+    <div className='max-w-[250px] ml-auto w-full relative'>
       <input
         type='text'
         value={value}

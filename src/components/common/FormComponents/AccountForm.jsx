@@ -29,9 +29,7 @@ const AccountForm = ({ apiFunction, editValue, pricePerKG }) => {
   const validationSchema = Yup.object({
     name: Yup.string().required('Name is required'),
     phoneNo: Yup.number().typeError('Phone must be a number'),
-    email: Yup.string()
-      .email('Must be a valid email')
-      .required('Email is required'),
+    email: Yup.string().email('Must be a valid email'),
     status: Yup.string(),
     password: Yup.string().required('Password is required'),
     passwordConfirm: Yup.string()
@@ -113,6 +111,7 @@ const AccountForm = ({ apiFunction, editValue, pricePerKG }) => {
                   placeholder='Enter full name*'
                   id='name'
                   name='name'
+                  disabled={isLoading}
                 />
               </div>
               <div className=' w-full'>
@@ -122,6 +121,7 @@ const AccountForm = ({ apiFunction, editValue, pricePerKG }) => {
                   id='phoneNo'
                   placeholder='Enter phone number'
                   type='number'
+                  disabled={isLoading}
                 />
               </div>
               <div className=' w-full'>
@@ -131,6 +131,7 @@ const AccountForm = ({ apiFunction, editValue, pricePerKG }) => {
                   id='email'
                   type='email'
                   placeholder='Enter email id'
+                  disabled={isLoading}
                 />
               </div>
               <div className=' w-full'>
@@ -148,6 +149,7 @@ const AccountForm = ({ apiFunction, editValue, pricePerKG }) => {
               </div>
               <div className=' w-full'>
                 <Input
+                  disabled={isLoading}
                   label='Password*'
                   name='password'
                   id='password'
@@ -163,6 +165,7 @@ const AccountForm = ({ apiFunction, editValue, pricePerKG }) => {
                   id='passwordConfirm'
                   placeholder='Enter confirm password'
                   type='password'
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -202,7 +205,9 @@ const AccountForm = ({ apiFunction, editValue, pricePerKG }) => {
             <div className='flex space-x-3 justify-end mt-8  w-full'>
               <button
                 onClick={() => {
-                  navigate(`/account`);
+                  navigate(`/account`, {
+                    replace: true,
+                  });
                 }}
                 disabled={isLoading}
                 type='button'

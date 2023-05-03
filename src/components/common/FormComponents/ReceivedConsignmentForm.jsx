@@ -10,6 +10,7 @@ import { ERROR, SUCCESS } from '../../../utils/constant';
 import { handleError } from '../../../utils/helper';
 import { addToast } from '../../../redux/features/toastSlice';
 import { useDispatch } from 'react-redux';
+import AutoCalculateInput from '../Form/AutoCalculateInput';
 
 const ReceivedConsignmentForm = ({ apiFunction, editValue, pricePerKG }) => {
   const { partnerId, consignmentId: bookedConsignmentId } = useParams();
@@ -29,6 +30,7 @@ const ReceivedConsignmentForm = ({ apiFunction, editValue, pricePerKG }) => {
     unloadQuantity: editValue ? editValue.unloadQuantity : '',
     shortQuantity: editValue ? editValue.shortQuantity : '',
     payment: editValue ? editValue.payment : '',
+    gst: editValue ? editValue.gst : '',
   };
   const validationSchema = Yup.object({
     date: Yup.string('Please Select a Date').required('Date is required'),
@@ -41,6 +43,7 @@ const ReceivedConsignmentForm = ({ apiFunction, editValue, pricePerKG }) => {
     unloadQuantity: Yup.string().required('Unload Quantity is required'),
     shortQuantity: Yup.string().required('Short Quantity is required'),
     payment: Yup.string(),
+    gst: Yup.string(),
   });
 
   const { mutate, data, error, isLoading } = useMutation({
@@ -109,6 +112,7 @@ const ReceivedConsignmentForm = ({ apiFunction, editValue, pricePerKG }) => {
                   placeholder='Select Booking Date*'
                   id='date'
                   name='date'
+                  disabled={isLoading}
                 />
               </div>
               <div className=' w-full'>
@@ -117,6 +121,7 @@ const ReceivedConsignmentForm = ({ apiFunction, editValue, pricePerKG }) => {
                   name='otherAmount'
                   id='otherAmount'
                   placeholder='Enter amount'
+                  disabled={isLoading}
                 />
               </div>
               <div className=' w-full'>
@@ -125,6 +130,7 @@ const ReceivedConsignmentForm = ({ apiFunction, editValue, pricePerKG }) => {
                   name='billNo'
                   id='billNo'
                   placeholder='Enter bill no'
+                  disabled={isLoading}
                 />
               </div>
               <div className=' w-full'>
@@ -133,6 +139,7 @@ const ReceivedConsignmentForm = ({ apiFunction, editValue, pricePerKG }) => {
                   name='vehicleNo'
                   id='vehicleNo '
                   placeholder='Enter vehicle number'
+                  disabled={isLoading}
                 />
               </div>
               <div className=' w-full'>
@@ -141,6 +148,7 @@ const ReceivedConsignmentForm = ({ apiFunction, editValue, pricePerKG }) => {
                   name='billingQuantity'
                   id='billingQuantity'
                   placeholder='Billing Quantity*'
+                  disabled={isLoading}
                 />
               </div>
 
@@ -150,6 +158,7 @@ const ReceivedConsignmentForm = ({ apiFunction, editValue, pricePerKG }) => {
                   name='unloadQuantity'
                   id='unloadQuantity'
                   placeholder='Enter unload Quantity'
+                  disabled={isLoading}
                 />
               </div>
 
@@ -159,22 +168,34 @@ const ReceivedConsignmentForm = ({ apiFunction, editValue, pricePerKG }) => {
                   name='billingRate'
                   id='billingRate'
                   placeholder='Enter price'
+                  disabled={isLoading}
                 />
               </div>
               <div className=' w-full'>
-                <Input
+                <AutoCalculateInput
                   label='Short Quantity*'
                   name='shortQuantity'
                   id='shortQuantity'
                   placeholder='Enter short Quantity'
+                  disabled={true}
                 />
               </div>
               <div className=' w-full'>
                 <Input
+                  label='GST*'
+                  name='gst'
+                  id='gst'
+                  placeholder='Enter GST percentage'
+                  disabled={isLoading}
+                />
+              </div>
+              <div className=' w-full'>
+                <AutoCalculateInput
                   label='Total Billing amount*'
                   name='totalBillingAmount'
                   id='totalBillingAmount'
                   placeholder='Enter price'
+                  disabled={true}
                 />
               </div>
               <div className=' w-full'>
@@ -183,6 +204,7 @@ const ReceivedConsignmentForm = ({ apiFunction, editValue, pricePerKG }) => {
                   name='payment'
                   id='payment'
                   placeholder='Enter paid amount'
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -190,7 +212,10 @@ const ReceivedConsignmentForm = ({ apiFunction, editValue, pricePerKG }) => {
               <button
                 onClick={() => {
                   navigate(
-                    `/all-purchase-partner/${partnerId}/${bookedConsignmentId}`
+                    `/all-purchase-partner/${partnerId}/${bookedConsignmentId}`,
+                    {
+                      replace: true,
+                    }
                   );
                 }}
                 disabled={isLoading}
