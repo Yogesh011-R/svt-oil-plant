@@ -186,7 +186,7 @@ const PurchaseSoudha = () => {
   const [pageIndex, setPageIndex] = useState(0);
   const [searchValue, setSearchValue] = useState('');
   const [entriesValue, setEntriesValue] = useState(entriesOption[0]);
-  const [query] = useDebounce(searchValue, 1000);
+  const [query] = useDebounce(searchValue, 500);
 
   const { data, isLoading, isError, error, isFetching } = useQuery(
     ['getAllPartners', entriesValue, pageIndex, query],
@@ -220,14 +220,14 @@ const PurchaseSoudha = () => {
     component = (
       <div className='py-20 flex flex-col items-center justify-center'>
         <p className=' text-center mb-5'>
-          No Booking{' '}
+          No Partner{' '}
           {searchValue ? (
             <span>
               for the value <span className='font-bold '>{searchValue}</span>
             </span>
           ) : (
             'added yet!'
-          )}{' '}
+          )}
         </p>
         {!searchValue && (
           <div>

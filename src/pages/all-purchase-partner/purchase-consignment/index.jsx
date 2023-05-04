@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { HiPencil } from 'react-icons/hi';
 import { RiDeleteBin6Line } from 'react-icons/ri';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import AddBtn from '../../../components/common/AddBtn';
 import BreadCrumb from '../../../components/common/BreadCrumb';
 import ExportBtn from '../../../components/common/ExportBtn';
@@ -18,13 +18,16 @@ import { DELETE_MODAL, entriesOption } from '../../../utils/constant';
 import { showModal } from '../../../redux/features/modalSlice';
 import { useDispatch } from 'react-redux';
 import { combineToSingleObject } from '../../../utils/helper';
+import { useDebounce } from 'use-debounce';
 
 const getBookedConsignments = async ({ queryKey }) => {
-  const [_, partnerId, page, limit] = queryKey;
+  const [_, partnerId, page, limit, query, showPending] = queryKey;
   const res = await axios.get(
     `${SERVER_URL}/soudha/consignment/${partnerId}?page=${page + 1}&limit=${
       limit?.value || 10
-    }&sortBy=status:desc,updatedAt:desc`
+    }&sortBy=status:desc,updatedAt:desc&oilType=${query}&status=${
+      showPending ? 'pending' : ''
+    }`
   );
 
   return res.data;
@@ -32,6 +35,20 @@ const getBookedConsignments = async ({ queryKey }) => {
 
 const PurchaseSoudha = () => {
   const dispatch = useDispatch();
+  const [searchParams] = useSearchParams();
+
+  const [showPending, setShowPending] = useState(false);
+
+  useEffect(() => {
+    for (const entry of searchParams.entries()) {
+      if (entry.includes('pending')) {
+        setShowPending(true);
+      } else {
+        setShowPending(false);
+      }
+    }
+  }, []);
+
   const TABLE_COLUMNS = [
     {
       Header: 'ID',
@@ -184,14 +201,22 @@ const PurchaseSoudha = () => {
   const { partnerId } = useParams();
 
   const [searchValue, setSearchValue] = useState('');
+  const [query] = useDebounce(searchValue, 500);
   const [entriesValue, setEntriesValue] = useState(entriesOption[0]);
 
   const [startDate, setStartDate] = useState(null);
 
   const [endDate, setEndDate] = useState(null);
 
-  const { data, isLoading, isError, error } = useQuery(
-    ['getBookedConsignments', partnerId, pageIndex, entriesValue],
+  const { data, isLoading, isError, error, isFetching } = useQuery(
+    [
+      'getBookedConsignments',
+      partnerId,
+      pageIndex,
+      entriesValue,
+      query,
+      showPending,
+    ],
     getBookedConsignments,
     {
       select: data => {
@@ -247,10 +272,21 @@ const PurchaseSoudha = () => {
   } else if (!data?.consignments?.results?.length) {
     component = (
       <div className='py-20 flex flex-col items-center justify-center'>
-        <p className=' text-center mb-5'>No Booking added yet!</p>
-        <div>
-          <AddBtn text='Add new booking' link='add-consignment' />
-        </div>
+        <p className=' text-center mb-5'>
+          No Partner{' '}
+          {searchValue ? (
+            <span>
+              for the value <span className='font-bold '>{searchValue}</span>
+            </span>
+          ) : (
+            'added yet!'
+          )}
+        </p>
+        {!searchValue && (
+          <div>
+            <AddBtn text='Add new booking' link='add-consignment' />
+          </div>
+        )}
       </div>
     );
   } else {

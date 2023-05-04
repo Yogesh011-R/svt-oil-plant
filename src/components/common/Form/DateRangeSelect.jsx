@@ -21,7 +21,7 @@ const DateRangeSelect = ({ startDate, endDate, setEndDate, setStartDate }) => {
         onChange={update => {
           onChange(update);
         }}
-        className='border border-black/30 pl-9 pr-4  p-2 ml-4 rounded-[5px]'
+        className='border border-black/30 pl-9 pr-4  placeholder:text-xs p-2 ml-4 rounded-[5px]'
         isClearable={false}
       />
       <div className='absolute left-6 top-3'>

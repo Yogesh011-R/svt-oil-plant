@@ -161,7 +161,7 @@ const Account = () => {
   const [entriesValue, setEntriesValue] = useState(entriesOption[0]);
   const [pageIndex, setPageIndex] = useState(0);
 
-  const [query] = useDebounce(searchValue, 1000);
+  const [query] = useDebounce(searchValue, 500);
 
   const { data, isLoading, isError, error } = useQuery(
     ['getAllUsers', entriesValue, pageIndex, query],

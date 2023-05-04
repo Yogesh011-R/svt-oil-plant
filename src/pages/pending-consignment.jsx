@@ -11,13 +11,14 @@ import { SERVER_URL } from '../utils/config';
 import { useQuery } from 'react-query';
 import { entriesOption } from '../utils/constant';
 import { combineToSingleObject } from '../utils/helper';
+import { useDebounce } from 'use-debounce';
 
 const getAllPendingConsignments = async ({ queryKey }) => {
-  const [_, limit, page] = queryKey;
+  const [_, limit, page, query] = queryKey;
   const res = await axios.get(
-    `${SERVER_URL}/soudha/consignment/pendingConsignment?page=${
-      page + 1 || 1
-    }&limit=${limit?.value || 10}&sortBy=createdAt:desc`
+    `${SERVER_URL}/soudha/partner/pendingPartners?page=${page + 1 || 1}&limit=${
+      limit?.value || 10
+    }&sortBy=soudhaStatus:desc,updatedAt:desc&partnerName=${query}`
   );
 
   return res.data;
@@ -27,40 +28,31 @@ const PendingConsignment = () => {
   const TABLE_COLUMNS = [
     {
       Header: 'ID',
-      accessor: 'id',
-      Cell: ({ row }) => {
-        return +row.id + 1;
-      },
+      accessor: 'tableId',
     },
     {
       Header: 'Partner Name',
       accessor: 'partnerName',
-      Cell: ({ row }) => {
-        return <div>{row.original?.partnerId?.partnerName}</div>;
-      },
     },
 
     {
       Header: 'Location',
       accessor: 'location',
-      Cell: ({ row }) => {
-        return <div>{row.original?.partnerId?.location}</div>;
-      },
     },
-    {
-      Header: 'OIl Type',
-      accessor: 'oilType',
-    },
+
     {
       Header: 'Total quantity',
       accessor: 'bookedQuantity',
+      Cell: ({ row }) => {
+        return <span>{row.original?.totalInfo?.totalBookQuantity || '-'}</span>;
+      },
     },
     {
       Header: 'Pending  quantity ',
       accessor: 'pendingQuantity',
       Cell: ({ row }) => {
         return (
-          <span>{row.original?.totalInfo?.totalPendingConsignment || '-'}</span>
+          <span>{row.original?.totalInfo?.totalPendingQuantity || '-'}</span>
         );
       },
     },
@@ -68,7 +60,18 @@ const PendingConsignment = () => {
       Header: 'Average rate',
       accessor: 'averageRate',
       Cell: ({ row }) => {
-        return <span>₹{row.original.averageRate}</span>;
+        return (
+          <span>
+            {' '}
+            {row?.original?.totalInfo?.averageRate
+              ? '₹' +
+                parseFloat(
+                  row?.original?.totalInfo?.averageRate /
+                    row?.original?.totalInfo?.totalBookQuantity
+                ).toFixed(2)
+              : '-'}
+          </span>
+        );
       },
     },
     {
@@ -78,7 +81,7 @@ const PendingConsignment = () => {
         return (
           <div>
             <Link
-              to={`/all-purchase-partner/${row.original?.partnerId?.id}/${row.original.id}`}
+              to={`/all-purchase-partner/${row.original.id}?pending=true`}
               className='bg-secondary py-2.5 px-5 rounded-md text-white text-[11px]'
             >
               View
@@ -93,17 +96,18 @@ const PendingConsignment = () => {
 
   const [searchValue, setSearchValue] = useState('');
   const [entriesValue, setEntriesValue] = useState(entriesOption[0]);
+  const [query] = useDebounce(searchValue, 500);
   const [pageIndex, setPageIndex] = useState(0);
 
   const { data, isLoading, isError, error } = useQuery(
-    ['getAllPendingConsignment', entriesValue, pageIndex],
+    ['getAllPendingConsignment', entriesValue, pageIndex, query],
     getAllPendingConsignments,
     {
       select: data => {
-        const newResult = data.pendingConsignments.results.map((item, idx) => {
+        const newResult = data.pendingPartners.results.map((item, idx) => {
           return {
             ...item,
-            totalInfo: data.receivedConsignTotalInfo.filter(info => {
+            totalInfo: data.totalInfo.filter(info => {
               return info.id === item.id;
             })[0]?.totalInfo,
           };
@@ -124,9 +128,8 @@ const PendingConsignment = () => {
         };
 
         return {
-          ...data,
-          pendingConsignments: {
-            ...data.pendingConsignments,
+          pendingPartners: {
+            ...data.pendingPartners,
             results: newResult,
           },
           totalInfo: totalFu(),
@@ -144,7 +147,7 @@ const PendingConsignment = () => {
     );
   } else if (isLoading) {
     component = <p className='mt-6 ml-4 pb-10 text-center'>Loading...</p>;
-  } else if (!data?.pendingConsignments?.results?.length) {
+  } else if (!data?.pendingPartners?.results?.length) {
     component = (
       <div className='py-20 flex flex-col items-center justify-center'>
         <p className=' text-center mb-5'>No Pending consignments!</p>
@@ -157,18 +160,18 @@ const PendingConsignment = () => {
         cSetSortBy={cSetSortBy}
         desc={desc}
         setDesc={setDesc}
-        tableData={data?.pendingConsignments?.results}
+        tableData={data?.pendingPartners?.results}
         columnName={TABLE_COLUMNS}
         pageIndex={pageIndex}
         setPageIndex={setPageIndex}
         cPageSize={entriesValue.value}
         cSetPageSize={setEntriesValue}
         pageCount={
-          data?.pendingConsignments?.totalPages
-            ? data?.pendingConsignments?.totalPages
+          data?.pendingPartners?.totalPages
+            ? data?.pendingPartners?.totalPages
             : -1
         }
-        totalResults={data?.pendingConsignments?.totalResults}
+        totalResults={data?.pendingPartners?.totalResults}
       />
     );
   }
@@ -184,10 +187,10 @@ const PendingConsignment = () => {
           searchValue={searchValue}
           setSearchValue={setSearchValue}
           entriesValue={entriesValue}
-          detailsData={data?.pendingConsignments?.results}
+          detailsData={data?.pendingPartners?.results}
           setEntriesValue={setEntriesValue}
           downloadInfo={{
-            data: combineToSingleObject(data?.pendingConsignments.results),
+            data: combineToSingleObject(data?.pendingPartners.results),
             fields: {
               partnerName: 'Partner Name',
               location: 'Location',
@@ -199,11 +202,23 @@ const PendingConsignment = () => {
             },
             filename: 'Booked Pending consignments.csv',
           }}
+          detailInfo={
+            <TotalDetails
+              totalInfo={[
+                {
+                  id: 1,
+                  name: 'Total Pending consignment',
+                  value: `${data?.totalInfo?.totalPendingConsignment || '-'}`,
+                },
+              ]}
+            />
+          }
         />
 
         <div>{component}</div>
       </section>
-      <TotalDetails
+
+      {/* <TotalDetails
         totalInfo={[
           {
             id: 1,
@@ -211,7 +226,7 @@ const PendingConsignment = () => {
             value: `${data?.totalInfo?.totalPendingConsignment || '-'}`,
           },
         ]}
-      />
+      /> */}
     </div>
   );
 };

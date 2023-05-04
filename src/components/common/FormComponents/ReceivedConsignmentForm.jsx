@@ -189,15 +189,7 @@ const ReceivedConsignmentForm = ({ apiFunction, editValue, pricePerKG }) => {
                   disabled={isLoading}
                 />
               </div>
-              <div className=' w-full'>
-                <AutoCalculateInput
-                  label='Total Billing amount*'
-                  name='totalBillingAmount'
-                  id='totalBillingAmount'
-                  placeholder='Enter price'
-                  disabled={true}
-                />
-              </div>
+
               <div className=' w-full'>
                 <Input
                   label='Payment'
@@ -205,6 +197,15 @@ const ReceivedConsignmentForm = ({ apiFunction, editValue, pricePerKG }) => {
                   id='payment'
                   placeholder='Enter paid amount'
                   disabled={isLoading}
+                />
+              </div>
+              <div className=' w-full'>
+                <AutoCalculateInput
+                  label='Total Billing amount*'
+                  name='totalBillingAmount'
+                  id='totalBillingAmount'
+                  placeholder='Enter price'
+                  disabled={true}
                 />
               </div>
             </div>
