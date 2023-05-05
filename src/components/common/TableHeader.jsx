@@ -37,6 +37,11 @@ const TableHeader = ({
     <div>
       <div className='p-[18px] border-b flex items-center justify-between'>
         <h1 className='text-xl font-medium flex-1'>{title}</h1>
+        {detailInfo && (
+          <div className='px-4'>
+            <h1 className='text-xl font-medium'>Total details</h1>
+          </div>
+        )}
       </div>
       <div className='flex  justify-between'>
         {partnerDetails && (

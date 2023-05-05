@@ -196,7 +196,7 @@ const ReceivedConsignmentForm = ({ apiFunction, editValue, pricePerKG }) => {
                   name='payment'
                   id='payment'
                   placeholder='Enter paid amount'
-                  disabled={isLoading}
+                  disabled={true}
                 />
               </div>
               <div className=' w-full'>

@@ -166,7 +166,7 @@ export const handleError = err => {
   const res = err.response;
 
   if (res && res.status === 401) {
-    removeTokens();
+    // removeTokens();
     // window.location.href = '/login';
   } else if (res && res.status === 400) {
     return message;

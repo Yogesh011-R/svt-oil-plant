@@ -30,71 +30,131 @@ axios.interceptors.request.use(
 );
 
 // interceptors
-let isFirst = true;
+let isRefreshing = false;
 
 axios.interceptors.response.use(
-  function (response) {
+  response => {
     return response;
   },
-  function (error) {
-    const originalRequest = error.config;
+  error => {
+    const {
+      config,
+      response: { status },
+    } = error;
+    const originalRequest = config;
 
-    // try to refresh the token for one time and it is not login route
-    // isFirst -> for invalid refreshToken response handling
-    // originalRequest._retry -> for invalid accessToken response handling
+    if (status === 401) {
+      if (
+        !isRefreshing &&
+        !originalRequest.url.includes('login') &&
+        !originalRequest.url.includes('verify-otp') &&
+        !originalRequest.url.includes('reset-password')
+      ) {
+        axios
+          .post(`${SERVER_URL}/auth/refresh-tokens`, {
+            refreshToken: store.getState().auth.refreshToken,
+          })
+          .then(response => {
+            // get the accessToken
 
-    if (
-      isFirst &&
-      error?.response?.status === 401 &&
-      !originalRequest.url.includes('login') &&
-      !originalRequest.url.includes('verify-otp') &&
-      !originalRequest.url.includes('reset-password') &&
-      !originalRequest._retry
-    ) {
-      isFirst = false;
+            const accessToken = response.data.access.token;
+            const refreshToken = response.data.refresh.token;
 
-      // try to get a new access_token
-      return axios
-        .post(`${SERVER_URL}/auth/refresh-tokens`, {
-          refreshToken: store.getState().auth.refreshToken,
-        })
-        .then(response => {
-          // get the accessToken
+            store.dispatch(loginUser({ accessToken, refreshToken }));
 
-          const accessToken = response.data.access.token;
-          const refreshToken = response.data.refresh.token;
+            // originalRequest.headers["authorization"] = "Bearer " + accessToken;
 
-          store.dispatch(loginUser({ accessToken, refreshToken }));
+            // user can again request for refreshToken
+            isFirst = true;
+            originalRequest._retry = true;
 
-          // originalRequest.headers["authorization"] = "Bearer " + accessToken;
-
-          // user can again request for refreshToken
-          isFirst = true;
-          originalRequest._retry = true;
-
-          // retry the original request
-          return axios(originalRequest);
-        })
-        .catch(error => {
-          if (error?.response?.status === 401) {
-            store.dispatch(logoutUser());
-          }
-          return Promise.reject({ error });
-        });
+            // retry the original request
+            return axios(originalRequest);
+          })
+          .catch(e => {
+            if (e?.response?.status === 401) {
+              store.dispatch(logoutUser());
+            }
+            return Promise.reject(e);
+          });
+      } else {
+        return Promise.reject(error);
+      }
+    } else {
+      return Promise.reject(error);
     }
-
-    // if error === 401, then do the following, or reject Promise
-    if (
-      isFirst &&
-      error?.response?.status === 401 &&
-      !originalRequest.url.includes('login') &&
-      !originalRequest.url.includes('reset-password')
-    ) {
-      store.dispatch(logoutUser());
-    }
-    return Promise.reject(error);
   }
 );
+
+// axios.interceptors.response.use(
+//   function (response) {
+//     return response;
+//   },
+//   function (error) {
+//     const originalRequest = error.config;
+
+//     // try to refresh the token for one time and it is not login route
+//     // isFirst -> for invalid refreshToken response handling
+//     // originalRequest._retry -> for invalid accessToken response handling
+
+//     console.log('🚀 ~ file: App.jsx:40 ~ error:', error);
+//     console.log('🚀 ~ file: App.jsx:41 ~ originalRequest:', originalRequest);
+
+//     if (
+//       isFirst &&
+//       error?.response?.status === 401 &&
+//       !originalRequest.url.includes('login') &&
+//       !originalRequest.url.includes('verify-otp') &&
+//       !originalRequest.url.includes('reset-password') &&
+//       !originalRequest.url.includes('getDetails') &&
+//       !originalRequest._retry
+//     ) {
+//       isFirst = false;
+
+//       // try to get a new access_token
+//       return axios
+//         .post(`${SERVER_URL}/auth/refresh-tokens`, {
+//           refreshToken: store.getState().auth.refreshToken,
+//         })
+//         .then(response => {
+//           // get the accessToken
+
+//           const accessToken = response.data.access.token;
+//           const refreshToken = response.data.refresh.token;
+
+//           store.dispatch(loginUser({ accessToken, refreshToken }));
+
+//           // originalRequest.headers["authorization"] = "Bearer " + accessToken;
+
+//           // user can again request for refreshToken
+//           isFirst = true;
+//           originalRequest._retry = true;
+
+//           // retry the original request
+//           return axios(originalRequest);
+//         })
+//         .catch(error => {
+//           console.log('🚀 ~ file: App.jsx:85 ~ error:', error);
+
+//           if (error?.response?.status === 401) {
+//             store.dispatch(logoutUser());
+//           }
+//           return Promise.reject({ error });
+//         });
+//     }
+
+//     // if error === 401, then do the following, or reject Promise
+//     if (
+//       isFirst &&
+//       error?.response?.status === 401 &&
+//       !originalRequest.url.includes('login') &&
+//       !originalRequest.url.includes('reset-password')
+//     ) {
+//       store.dispatch(logoutUser());
+//     }
+//     return Promise.reject(error);
+//   }
+// );
 
 function App() {
   const queryClient = new QueryClient({

@@ -13,7 +13,7 @@ import TableInstance from '../../../components/Table/TableInstance';
 import { useQuery } from 'react-query';
 import axios from 'axios';
 import { SERVER_URL } from '../../../utils/config';
-import { format } from 'date-fns';
+import { format, formatISO } from 'date-fns';
 import { DELETE_MODAL, entriesOption } from '../../../utils/constant';
 import { showModal } from '../../../redux/features/modalSlice';
 import { useDispatch } from 'react-redux';
@@ -21,13 +21,17 @@ import { combineToSingleObject } from '../../../utils/helper';
 import { useDebounce } from 'use-debounce';
 
 const getBookedConsignments = async ({ queryKey }) => {
-  const [_, partnerId, page, limit, query, showPending] = queryKey;
+  const [_, partnerId, page, limit, query, showPending, dates] = queryKey;
+  console.log(
+    '🚀 ~ file: index.jsx:25 ~ getBookedConsignments ~ dates:',
+    dates
+  );
   const res = await axios.get(
     `${SERVER_URL}/soudha/consignment/${partnerId}?page=${page + 1}&limit=${
       limit?.value || 10
-    }&sortBy=status:desc,updatedAt:desc&oilType=${query}&status=${
-      showPending ? 'pending' : ''
-    }`
+    }&sortBy=status:desc,updatedAt:desc&oilType=${query}&startDate=${
+      dates?.startDate
+    }&endDate=${dates?.endDate}&status=${showPending ? 'pending' : ''}`
   );
 
   return res.data;
@@ -121,7 +125,7 @@ const PurchaseSoudha = () => {
       Cell: ({ row }) => {
         return (
           <div>
-            <p>{format(new Date(row.original.bookingDate), 'MM/dd/yyyy')}</p>
+            <p>{format(new Date(row.original.bookingDate), 'EEE, d MMM yy')}</p>
           </div>
         );
       },
@@ -208,6 +212,19 @@ const PurchaseSoudha = () => {
 
   const [endDate, setEndDate] = useState(null);
 
+  const [finalDate, setFinalDate] = useState(null);
+
+  useEffect(() => {
+    if (startDate && endDate) {
+      setFinalDate({
+        startDate,
+        endDate,
+      });
+    } else {
+      setFinalDate(null);
+    }
+  }, [startDate, endDate]);
+
   const { data, isLoading, isError, error, isFetching } = useQuery(
     [
       'getBookedConsignments',
@@ -216,6 +233,7 @@ const PurchaseSoudha = () => {
       entriesValue,
       query,
       showPending,
+      finalDate,
     ],
     getBookedConsignments,
     {
@@ -310,9 +328,9 @@ const PurchaseSoudha = () => {
     );
   }
 
-  if (isLoading) {
-    return <p className=' py-10 text-center'>Loading..</p>;
-  }
+  // if (isLoading) {
+  //   return <p className=' py-10 text-center'>Loading..</p>;
+  // }
 
   return (
     <div>

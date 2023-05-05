@@ -22,16 +22,18 @@ const AutoCalculateInput = ({
 
     const withGST = totalBillingAmount * (values.gst / 100);
 
-    setFieldValue(
-      'totalBillingAmount',
-      totalBillingAmount + withGST - +values.otherAmount || ''
-    );
+    setFieldValue('totalBillingAmount', totalBillingAmount + withGST || '');
     //EO totalBillingAmount
 
     //Unload Amount
     const shortAmount = +values.billingQuantity - +values.unloadQuantity;
 
+    const payment =
+      +values?.otherAmount && +values.totalBillingAmount - +values?.otherAmount;
+
     setFieldValue('shortQuantity', shortAmount || '');
+
+    setFieldValue('payment', payment || '');
   }, [values]);
 
   return (

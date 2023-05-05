@@ -32,7 +32,9 @@ const Login = () => {
   const login = async (user, fn) => {
     setIsSubmitting(true);
     try {
-      const { data } = await axios.post(`${SERVER_URL}/auth/login`, user);
+      const res = await axios.post(`${SERVER_URL}/auth/login`, user);
+      const data = res?.data;
+      setIsSubmitting(false);
 
       if (data) {
         setIsSubmitting(false);
@@ -115,6 +117,7 @@ const Login = () => {
                 id='name'
                 placeholder='USERNAME'
                 type='text'
+                autoComplete={'username'}
                 Icon={
                   <FiUser className='text-2xl text-black text-opacity-60' />
                 }
@@ -124,6 +127,7 @@ const Login = () => {
                 id='password'
                 type='password'
                 placeholder='PASSWORD'
+                autoComplete={'current-password'}
                 Icon={
                   <VscLock className='text-2xl text-black text-opacity-60' />
                 }

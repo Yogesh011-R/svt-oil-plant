@@ -4,9 +4,9 @@ const TotalDetails = ({ totalInfo }) => {
   return (
     <section className='bg-white my-4 rounded-[10px] ml-auto'>
       {' '}
-      <div className='px-4'>
+      {/* <div className='px-4'>
         <h1 className='text-xl font-medium'>Total details</h1>
-      </div>
+      </div> */}
       <div className='px-6 pt-3'>
         <div className=' border-[0.5px] w-fit border-black border-opacity-30'>
           {totalInfo.map(item => {

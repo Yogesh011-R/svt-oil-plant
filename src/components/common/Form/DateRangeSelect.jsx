@@ -21,8 +21,8 @@ const DateRangeSelect = ({ startDate, endDate, setEndDate, setStartDate }) => {
         onChange={update => {
           onChange(update);
         }}
-        className='border border-black/30 pl-9 pr-4  placeholder:text-xs p-2 ml-4 rounded-[5px]'
-        isClearable={false}
+        className='border border-black/30 pl-9 pr-8  placeholder:text-xs p-2 ml-4 rounded-[5px]'
+        isClearable={true}
       />
       <div className='absolute left-6 top-3'>
         <FaRegCalendarAlt className='text-black/50 text-lg' />

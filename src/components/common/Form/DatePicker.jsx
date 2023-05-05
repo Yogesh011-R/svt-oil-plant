@@ -17,6 +17,7 @@ const DatePicker = ({ label, type, placeholder, ...props }) => {
         <ReactDatePicker
           {...field}
           {...props}
+          dateFormat='dd/MM/yy'
           onTouch={setField.setTouched}
           placeholder={placeholder}
           selected={field.value}

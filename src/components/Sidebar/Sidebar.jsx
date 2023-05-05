@@ -132,7 +132,7 @@ const Sidebar = () => {
                           : '0px'
                       );
                     }}
-                    className='flex flex-1 items-center justify-between'
+                    className='flex  flex-1 items-center justify-between'
                   >
                     <div className='flex  items-center w-full flex-1 space-x-3.5'>
                       {Icon}{' '}
@@ -155,7 +155,7 @@ const Sidebar = () => {
                 <div
                   ref={container}
                   style={{ height: height }}
-                  className='overflow-hidden'
+                  className='overflow-hidden bg-[#1E395E]'
                 >
                   {subMenu?.map(item => {
                     const { id, link, name } = item;

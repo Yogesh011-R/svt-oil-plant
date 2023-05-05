@@ -42,7 +42,7 @@ const ReceivedConsignment = () => {
       Cell: ({ row }) => {
         return (
           <div>
-            <p>{format(new Date(row.original.date), 'MM/dd/yyyy')}</p>
+            <p>{format(new Date(row.original.date), 'EEE, d MMM yy')}</p>
           </div>
         );
       },
@@ -275,13 +275,13 @@ const ReceivedConsignment = () => {
               {data?.totalInfo && (
                 <TotalDetails
                   totalInfo={[
-                    {
-                      id: 1,
-                      name: 'Total Pending consignment',
-                      value:
-                        data.bookedConsignment?.bookedQuantity -
-                        data.totalInfo?.totalPendingConsignment,
-                    },
+                    // {
+                    //   id: 1,
+                    //   name: 'Total Pending consignment',
+                    //   value:
+                    //     data.bookedConsignment?.bookedQuantity -
+                    //     data.totalInfo?.totalPendingConsignment,
+                    // },
                     {
                       id: 2,
                       name: 'Total payment pending',
