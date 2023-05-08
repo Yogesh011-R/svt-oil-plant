@@ -375,7 +375,7 @@ const PurchaseSoudha = () => {
               differenceAmount: 'Difference Amount',
               status: 'Status',
             },
-            filename: 'Booked Purchase consignments.csv',
+            filename: 'Booked-Purchase-consignments.csv',
           }}
           dateFilter={true}
           startDate={startDate}

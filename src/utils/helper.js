@@ -2,6 +2,11 @@ import jwtDecode from 'jwt-decode';
 import * as CryptoJS from 'crypto-js';
 import { PASSWORD_ENCRYPT } from './config';
 import * as XLSX from 'xlsx';
+import AWS from 'aws-sdk';
+import axios, { Axios } from 'axios';
+// import store from '../redux/app/store';
+import { ERROR } from './constant';
+import { addToast } from '../redux/features/toastSlice';
 
 export const encrypt = password => {
   return CryptoJS.AES.encrypt(password, PASSWORD_ENCRYPT).toString();
@@ -226,7 +231,7 @@ export const statusColor = (status, opacity = 1) => {
   return colors[status];
 };
 
-export const downloadAsExcel = (data, fileName, fields) => {
+export const downloadAsExcel = (data, fileName, fields, isWhatsapp) => {
   const selectField = { ...fields };
   for (let prop in selectField) {
     selectField[prop] = true;
@@ -248,7 +253,107 @@ export const downloadAsExcel = (data, fileName, fields) => {
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
 
-  XLSX.writeFile(workbook, `${fileName}.xlsx`);
+  if (isWhatsapp) {
+    var wopts = { bookType: 'xlsx', bookSST: false, type: 'buffer' };
+
+    var wbout = XLSX.write(workbook, wopts);
+    var fdata = new FormData();
+
+    fdata.append(
+      'wbout',
+      new File([wbout], `${fileName.trim()}`, {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,',
+      })
+    );
+
+    // uploadToS3(fdata, 'wbout');
+
+    for (var pair of fdata.entries()) {
+      // console.log('🚀 ~ file: helper.js:262 ~ downloadAsExcel ~ pair:',  pair);
+      return uploadToS3(pair[1]);
+    }
+  } else {
+    XLSX.writeFile(workbook, `${fileName}.xlsx`);
+  }
+};
+
+export const uploadToS3 = async (file, name) => {
+  const s3 = new AWS.S3();
+
+  if (!file) {
+    return;
+  }
+
+  // const params = {
+  //   Bucket: 'My-Bucket-Name',
+  //   Key: `${Date.now()}.${file.name}`,
+  //   Body: file,
+  // };
+
+  const user = getUser();
+
+  const s3Params = {
+    Bucket: 'svt-test',
+    Key: `${user.name}-${file.name.trim()}-${Date.now()}.xlsx`,
+    ContentType:
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    Expires: 60,
+
+    Body: file,
+  };
+  const { Location } = await s3.upload(s3Params).promise();
+
+  return {
+    Location,
+    filename: `${file.name.trim()}.xlsx`,
+  };
+
+  await sendFileWhatsInApp(Location, `${file.name.trim()}.xlsx`);
+};
+
+export const sendFileWhatsInApp = async (link, filename) => {
+  const newAxios = axios.create();
+  try {
+    const res = await newAxios.post(
+      `https://graph.facebook.com/v16.0/103186509444905/messages`,
+      {
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to: '918946033879',
+        type: 'document',
+        document: {
+          link,
+          filename,
+        },
+      },
+      {
+        headers: {
+          Authorization:
+            'Bearer EABWTqd23LTgBADlEtF41MAQ2K7iME5KCbbtBZCrK2JzfzTI2xa6z5pvNZATvw0svcJTf7CAu6nJo2PbQbO4ZAVYR7wCt9T5zvnErx2ZCBgE2zT8pFSglaRkFDvuCdIXFycDRSgaeFVguwOXyiYHUgohIe3TFipo2RrHQU83C0MZCCvRxFDRlCrmNYDHbdWgALkhtE8t9DGadY4mZArvMcZB',
+
+          Accept: 'application/json',
+        },
+      }
+    );
+
+    // if (res.status === 200) {
+    //   store.dispatch(
+    //     addToast({
+    //       kind: SUCCESS,
+    //       msg: `Message sent successfully`,
+    //     })
+    //   );
+    // }
+  } catch (error) {
+    const message = handleError(error);
+
+    // store.dispatch(
+    //   addToast({
+    //     kind: ERROR,
+    //     msg: message,
+    //   })
+    // );
+  }
 };
 
 export const combineToSingleObject = array => {

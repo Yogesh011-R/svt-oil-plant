@@ -15,13 +15,14 @@ import { format } from 'date-fns';
 import { calculateGST, combineToSingleObject } from '../../../../utils/helper';
 import { showModal } from '../../../../redux/features/modalSlice';
 import { useDispatch } from 'react-redux';
+import { useDebounce } from 'use-debounce';
 
 const getReceivedConsignments = async ({ queryKey }) => {
-  const [_, bookedConsignmentId, limit, page] = queryKey;
+  const [_, bookedConsignmentId, limit, page, query] = queryKey;
   const res = await axios.get(
     `${SERVER_URL}/soudha/consignmentReceived/${bookedConsignmentId}?page=${
       page + 1
-    }&limit=${limit?.value || 10}&sortBy=createdAt:desc`
+    }&limit=${limit?.value || 10}&sortBy=createdAt:desc&billNo=${query}`
   );
 
   return res.data;
@@ -158,10 +159,17 @@ const ReceivedConsignment = () => {
   const [pageIndex, setPageIndex] = useState(0);
 
   const [searchValue, setSearchValue] = useState('');
+  const [query] = useDebounce(searchValue, 500);
   const [entriesValue, setEntriesValue] = useState(entriesOption[0]);
 
   const { data, isLoading, isError, error } = useQuery(
-    ['getReceivedConsignments', bookedConsignmentId, entriesValue, pageIndex],
+    [
+      'getReceivedConsignments',
+      bookedConsignmentId,
+      entriesValue,
+      pageIndex,
+      query,
+    ],
     getReceivedConsignments
   );
 
@@ -213,9 +221,6 @@ const ReceivedConsignment = () => {
     );
   }
 
-  if (isLoading) {
-    return <p className=' py-10 text-center'>Loading..</p>;
-  }
   return (
     <div>
       <BreadCrumb
@@ -240,23 +245,23 @@ const ReceivedConsignment = () => {
           setPageIndex={setPageIndex}
           pageIndex={pageIndex}
           partnerDetails={{
-            id: data?.bookedConsignment.partnerId.id,
-            name: data?.bookedConsignment.partnerId.partnerName,
-            location: data?.bookedConsignment.partnerId.location,
-            whatsappNo: data?.bookedConsignment.partnerId.whatsappNo,
-            oilType: data?.bookedConsignment.oilType,
-            bookedQuantity: data?.bookedConsignment.bookedQuantity,
-            rate: data?.bookedConsignment.rate,
-            advancePayment: data?.bookedConsignment.advancePayment,
+            id: data?.bookedConsignment?.partnerId?.id,
+            name: data?.bookedConsignment?.partnerId?.partnerName,
+            location: data?.bookedConsignment?.partnerId?.location,
+            whatsappNo: data?.bookedConsignment?.partnerId?.whatsappNo,
+            oilType: data?.bookedConsignment?.oilType,
+            bookedQuantity: data?.bookedConsignment?.bookedQuantity,
+            rate: data?.bookedConsignment?.rate,
+            advancePayment: data?.bookedConsignment?.advancePayment,
           }}
           morePartnerDetails={true}
-          detailsData={data.receivedConsignments.results}
+          detailsData={data?.receivedConsignments.results}
           whatsApp={true}
           btnText='Add new received Soudha '
           addLink='add-received-soudha'
-          linkState={{ pricePerKG: data.bookedConsignment.rate }}
+          linkState={{ pricePerKG: data?.bookedConsignment?.rate }}
           downloadInfo={{
-            data: combineToSingleObject(data?.receivedConsignments.results),
+            data: combineToSingleObject(data?.receivedConsignments?.results),
             fields: {
               billNo: 'Bill No',
               billingQuantity: 'Booked Quantity in KG',
@@ -268,7 +273,7 @@ const ReceivedConsignment = () => {
               shortQuantity: 'Short Quantity',
               payment: 'Payment',
             },
-            filename: 'Booked Purchase consignments.csv',
+            filename: 'Booked-Purchase-consignments.csv',
           }}
           detailInfo={
             <>

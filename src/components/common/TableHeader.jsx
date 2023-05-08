@@ -4,9 +4,13 @@ import ExportBtn from './ExportBtn';
 import SelectEntries from './SelectEntries';
 import TableSearch from './TableSearch';
 import { JsonToCsv, useJsonToCsv } from 'react-json-csv';
-import { downloadAsExcel } from '../../utils/helper';
+import { downloadAsExcel, handleError } from '../../utils/helper';
 import { useEffect } from 'react';
 import DateRangeSelect from './Form/DateRangeSelect';
+import { useDispatch } from 'react-redux';
+import axios from 'axios';
+import { addToast } from '../../redux/features/toastSlice';
+import { ERROR, SUCCESS } from '../../utils/constant';
 
 const TableHeader = ({
   title,
@@ -32,6 +36,51 @@ const TableHeader = ({
   detailInfo,
 }) => {
   const { saveAsCsv } = useJsonToCsv();
+  const dispatch = useDispatch();
+  const sendFileWhatsInApp = async (link, filename) => {
+    const newAxios = axios.create();
+    try {
+      const res = await newAxios.post(
+        `https://graph.facebook.com/v16.0/103186509444905/messages`,
+        {
+          messaging_product: 'whatsapp',
+          recipient_type: 'individual',
+          to: '918946033879',
+          type: 'document',
+          document: {
+            link,
+            filename,
+          },
+        },
+        {
+          headers: {
+            Authorization:
+              'Bearer EABWTqd23LTgBADlEtF41MAQ2K7iME5KCbbtBZCrK2JzfzTI2xa6z5pvNZATvw0svcJTf7CAu6nJo2PbQbO4ZAVYR7wCt9T5zvnErx2ZCBgE2zT8pFSglaRkFDvuCdIXFycDRSgaeFVguwOXyiYHUgohIe3TFipo2RrHQU83C0MZCCvRxFDRlCrmNYDHbdWgALkhtE8t9DGadY4mZArvMcZB',
+
+            Accept: 'application/json',
+          },
+        }
+      );
+
+      if (res.status === 200) {
+        dispatch(
+          addToast({
+            kind: SUCCESS,
+            msg: `Message sent successfully`,
+          })
+        );
+      }
+    } catch (error) {
+      const message = handleError(error);
+
+      dispatch(
+        addToast({
+          kind: ERROR,
+          msg: message,
+        })
+      );
+    }
+  };
 
   return (
     <div>
@@ -119,7 +168,21 @@ const TableHeader = ({
                     );
                   }}
                 />
-                {/* {whatsApp && <ExportBtn text='WHATSAPP' />} */}
+                {whatsApp && (
+                  <ExportBtn
+                    text='WHATSAPP'
+                    onClick={async () => {
+                      if (!downloadInfo) return;
+                      const data = await downloadAsExcel(
+                        downloadInfo.data,
+                        downloadInfo.filename.split('.')[0],
+                        downloadInfo.fields,
+                        'isWhatsapp'
+                      );
+                      sendFileWhatsInApp(data.Location, data.filename);
+                    }}
+                  />
+                )}
               </div>
             </div>
           ) : (

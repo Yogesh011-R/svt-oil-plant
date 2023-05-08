@@ -65,8 +65,8 @@ axios.interceptors.response.use(
             // originalRequest.headers["authorization"] = "Bearer " + accessToken;
 
             // user can again request for refreshToken
-            isFirst = true;
-            originalRequest._retry = true;
+            // isFirst = true;
+            isRefreshing = false;
 
             // retry the original request
             return axios(originalRequest);
@@ -155,6 +155,13 @@ axios.interceptors.response.use(
 //     return Promise.reject(error);
 //   }
 // );
+
+AWS.config.update({
+  accessKeyId: 'AKIAWUM26NDP6EKQQLJT',
+  secretAccessKey: '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',
+  region: 'ap-south-1',
+  signatureVersion: 'v4',
+});
 
 function App() {
   const queryClient = new QueryClient({
