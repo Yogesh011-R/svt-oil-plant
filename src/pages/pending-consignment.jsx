@@ -12,6 +12,7 @@ import { useQuery } from 'react-query';
 import { entriesOption } from '../utils/constant';
 import { combineToSingleObject } from '../utils/helper';
 import { useDebounce } from 'use-debounce';
+import Loading from '../components/Loading';
 
 const getAllPendingConsignments = async ({ queryKey }) => {
   const [_, limit, page, query] = queryKey;
@@ -175,8 +176,10 @@ const PendingConsignment = () => {
       />
     );
   }
+
   return (
     <div>
+      {isLoading && <Loading />}
       <BreadCrumb
         paths={[{ id: 1, name: 'Home', to: '/' }]}
         currentPage='Pending Consignment  '

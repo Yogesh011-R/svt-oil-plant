@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import BreadCrumb from '../../components/common/BreadCrumb';
 import AccountForm from '../../components/common/FormComponents/AccountForm';
 import axios from 'axios';
 import { SERVER_URL } from '../../utils/config';
+import { useSelector } from 'react-redux';
 
 const addUser = async data => {
   const res = await axios.post(`${SERVER_URL}/users`, data);
@@ -12,6 +13,13 @@ const addUser = async data => {
 };
 
 const AddUser = () => {
+  const { user } = useSelector(state => {
+    return state.auth;
+  });
+
+  if (user.role !== 'admin') {
+    return <Navigate replace to='/' />;
+  }
   return (
     <div>
       <BreadCrumb

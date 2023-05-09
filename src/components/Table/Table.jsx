@@ -46,7 +46,7 @@ const Table = ({
                 // borderCollapse: 'separate',
               }}
             >
-              <thead className='bg-primary bg-opacity-40  h-16  '>
+              <thead className='bg-primary bg-opacity-40  h-16   '>
                 {headerGroups.map(headerGroup => (
                   <tr
                     {...headerGroup.getHeaderGroupProps()}
@@ -62,10 +62,11 @@ const Table = ({
                           {...column.getHeaderProps(
                             column.getSortByToggleProps()
                           )}
+                          className='text-center '
                         >
                           <div>
                             <span
-                              className={`capitalize px-6  text-center  text-sm  text-black text-opacity-80  `}
+                              className={`capitalize px-5 !text-center flex flex-col   text-sm  text-black text-opacity-80  `}
                             >
                               {column.render('Header')}
                             </span>

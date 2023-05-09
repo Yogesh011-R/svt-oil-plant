@@ -50,6 +50,7 @@ axios.interceptors.response.use(
         !originalRequest.url.includes('verify-otp') &&
         !originalRequest.url.includes('reset-password')
       ) {
+        isRefreshing = true;
         axios
           .post(`${SERVER_URL}/auth/refresh-tokens`, {
             refreshToken: store.getState().auth.refreshToken,
@@ -81,6 +82,9 @@ axios.interceptors.response.use(
         return Promise.reject(error);
       }
     } else {
+      // if (error?.response?.status === 401) {
+      //   store.dispatch(logoutUser());
+      // }
       return Promise.reject(error);
     }
   }

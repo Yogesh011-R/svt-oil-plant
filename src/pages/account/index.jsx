@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { HiPencil } from 'react-icons/hi';
 import { RiDeleteBin6Line } from 'react-icons/ri';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import BreadCrumb from '../../components/common/BreadCrumb';
 import TableHeader from '../../components/common/TableHeader';
 import TableInstance from '../../components/Table/TableInstance';
@@ -31,6 +31,10 @@ const Account = () => {
   const { user } = useSelector(state => {
     return state.auth;
   });
+
+  if (user.role !== 'admin') {
+    return <Navigate replace to='/' />;
+  }
 
   const TABLE_COLUMNS = [
     {

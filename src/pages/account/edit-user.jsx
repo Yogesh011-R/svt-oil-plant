@@ -4,6 +4,7 @@ import BreadCrumb from '../../components/common/BreadCrumb';
 import AccountForm from '../../components/common/FormComponents/AccountForm';
 import axios from 'axios';
 import { SERVER_URL } from '../../utils/config';
+import { useSelector } from 'react-redux';
 
 const editUser = async data => {
   const res = await axios.patch(`${SERVER_URL}/users/${data.id}`, data);
@@ -13,6 +14,13 @@ const editUser = async data => {
 
 const EditUser = () => {
   const { state } = useLocation();
+  const { user } = useSelector(state => {
+    return state.auth;
+  });
+
+  if (user.role !== 'admin') {
+    return <Navigate replace to='/' />;
+  }
 
   if (!state) {
     return <Navigate replace to='/all-purchase-partner' />;

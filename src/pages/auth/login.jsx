@@ -93,7 +93,7 @@ const Login = () => {
     <div className='h-screen w-full flex items-center justify-center'>
       <div className='max-w-md w-full rounded-[10px]'>
         <div className='bg-primary py-7 text-white  rounded-t-[10px] text-6xl font-[800] text-center'>
-          <h1>LOGO</h1>
+          <h1>SVT</h1>
         </div>
         <div className='bg-white  py-7'>
           <h2 className='text-xl text-black text-opacity-60 text-center'>

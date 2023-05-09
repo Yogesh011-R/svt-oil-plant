@@ -1,6 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { HiChevronDown } from 'react-icons/hi';
+import { useSelector } from 'react-redux';
 
 const sidebarOptions = [
   {
@@ -68,43 +69,54 @@ const sidebarOptions = [
     ],
     links: ['/pending-consignment', '/all-purchase-partner'],
   },
-  {
-    id: 3,
-    Icon: (
-      <svg
-        width='20'
-        height='19'
-        viewBox='0 0 20 19'
-        fill='none'
-        xmlns='http://www.w3.org/2000/svg'
-      >
-        <path
-          d='M1.52441 17.3366C3.75527 14.9705 6.78404 13.5163 10.1201 13.5163C13.4562 13.5163 16.485 14.9705 18.7158 17.3366M14.418 5.39816C14.418 7.7718 12.4938 9.69601 10.1201 9.69601C7.74648 9.69601 5.82227 7.7718 5.82227 5.39816C5.82227 3.02452 7.74648 1.10031 10.1201 1.10031C12.4938 1.10031 14.418 3.02452 14.418 5.39816Z'
-          stroke='white'
-          strokeWidth='1.91016'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-        />
-      </svg>
-    ),
-    name: 'Account',
-    link: '/account',
-  },
 ];
 
 const Sidebar = () => {
   const location = useLocation().pathname;
+  const user = useSelector(state => {
+    return state.auth.user;
+  });
 
   const container = useRef(null);
 
   const [height, setHeight] = useState('0px');
   const [isOpened, setIsOpened] = useState(false);
 
+  useEffect(() => {
+    if (
+      user.role === 'admin' &&
+      !sidebarOptions.filter(item => item.name === 'Account').length
+    ) {
+      sidebarOptions.push({
+        id: 3,
+        Icon: (
+          <svg
+            width='20'
+            height='19'
+            viewBox='0 0 20 19'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+          >
+            <path
+              d='M1.52441 17.3366C3.75527 14.9705 6.78404 13.5163 10.1201 13.5163C13.4562 13.5163 16.485 14.9705 18.7158 17.3366M14.418 5.39816C14.418 7.7718 12.4938 9.69601 10.1201 9.69601C7.74648 9.69601 5.82227 7.7718 5.82227 5.39816C5.82227 3.02452 7.74648 1.10031 10.1201 1.10031C12.4938 1.10031 14.418 3.02452 14.418 5.39816Z'
+              stroke='white'
+              strokeWidth='1.91016'
+              strokeLinecap='round'
+              strokeLinejoin='round'
+            />
+          </svg>
+        ),
+        name: 'Account',
+        link: '/account',
+      });
+    }
+  }, []);
+
   return (
     <aside className='w-[271.73px] bg-primary sticky top-0 h-screen'>
       <div className='py-4 px-8 border-b border-white  border-opacity-40'>
         <Link to='/' className='text-white text-3xl font-[800]'>
-          LOGO
+          SVT
         </Link>
       </div>
       <ul>
