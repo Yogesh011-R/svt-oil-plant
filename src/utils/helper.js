@@ -2,11 +2,8 @@ import jwtDecode from 'jwt-decode';
 import * as CryptoJS from 'crypto-js';
 import { PASSWORD_ENCRYPT } from './config';
 import * as XLSX from 'xlsx';
-import AWS from 'aws-sdk';
-import axios, { Axios } from 'axios';
-// import store from '../redux/app/store';
-import { ERROR } from './constant';
-import { addToast } from '../redux/features/toastSlice';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { format } from 'date-fns';
 
 export const encrypt = password => {
   return CryptoJS.AES.encrypt(password, PASSWORD_ENCRYPT).toString();
@@ -278,7 +275,15 @@ export const downloadAsExcel = (data, fileName, fields, isWhatsapp) => {
 };
 
 export const uploadToS3 = async (file, name) => {
-  const s3 = new AWS.S3();
+  const s3 = new S3Client({
+    region: 'ap-south-1',
+    credentials: {
+      accessKeyId: 'AKIAWUM26NDP6EKQQLJT',
+      secretAccessKey: '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',
+      // region: 'ap-south-1',
+      // signatureVersion: 'v4',
+    },
+  });
 
   if (!file) {
     return;
@@ -294,66 +299,33 @@ export const uploadToS3 = async (file, name) => {
 
   const s3Params = {
     Bucket: 'svt-test',
-    Key: `${user.name}-${file.name.trim()}-${Date.now()}.xlsx`,
+    Key: `${user.name}-${file.name.trim()}-${format(
+      new Date(),
+      'dd-MM-yy h:m'
+    )}.xlsx`,
     ContentType:
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    Expires: 60,
-
+    // Expires: 60,
     Body: file,
   };
-  const { Location } = await s3.upload(s3Params).promise();
+  const command = new PutObjectCommand(s3Params);
+
+  try {
+    const data = await s3.send(command);
+    console.log('🚀 ~ file: helper.js:311 ~ uploadToS3 ~ data:', data);
+    // process data.
+  } catch (error) {
+    // error handling.
+  } finally {
+    // finally.
+  }
+
+  // const { Location } = await s3.upload(s3Params).promise();
 
   return {
-    Location,
-    filename: `${file.name.trim()}.xlsx`,
+    Location: `https://svt-test.s3.ap-south-1.amazonaws.com/${s3Params.Key}`,
+    filename: `${file.name.trim()}-${format(new Date(), 'dd/MM/yy h:m')}.xlsx`,
   };
-
-  await sendFileWhatsInApp(Location, `${file.name.trim()}.xlsx`);
-};
-
-export const sendFileWhatsInApp = async (link, filename) => {
-  const newAxios = axios.create();
-  try {
-    const res = await newAxios.post(
-      `https://graph.facebook.com/v16.0/103186509444905/messages`,
-      {
-        messaging_product: 'whatsapp',
-        recipient_type: 'individual',
-        to: '918946033879',
-        type: 'document',
-        document: {
-          link,
-          filename,
-        },
-      },
-      {
-        headers: {
-          Authorization:
-            'Bearer EABWTqd23LTgBADlEtF41MAQ2K7iME5KCbbtBZCrK2JzfzTI2xa6z5pvNZATvw0svcJTf7CAu6nJo2PbQbO4ZAVYR7wCt9T5zvnErx2ZCBgE2zT8pFSglaRkFDvuCdIXFycDRSgaeFVguwOXyiYHUgohIe3TFipo2RrHQU83C0MZCCvRxFDRlCrmNYDHbdWgALkhtE8t9DGadY4mZArvMcZB',
-
-          Accept: 'application/json',
-        },
-      }
-    );
-
-    // if (res.status === 200) {
-    //   store.dispatch(
-    //     addToast({
-    //       kind: SUCCESS,
-    //       msg: `Message sent successfully`,
-    //     })
-    //   );
-    // }
-  } catch (error) {
-    const message = handleError(error);
-
-    // store.dispatch(
-    //   addToast({
-    //     kind: ERROR,
-    //     msg: message,
-    //   })
-    // );
-  }
 };
 
 export const combineToSingleObject = array => {

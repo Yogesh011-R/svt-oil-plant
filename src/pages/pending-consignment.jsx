@@ -189,6 +189,7 @@ const PendingConsignment = () => {
           entriesValue={entriesValue}
           detailsData={data?.pendingPartners?.results}
           setEntriesValue={setEntriesValue}
+          whatsApp={true}
           downloadInfo={{
             data: combineToSingleObject(data?.pendingPartners.results),
             fields: {
@@ -200,7 +201,7 @@ const PendingConsignment = () => {
               totalQuantity: 'Total Quantity',
               status: 'Status',
             },
-            filename: 'Booked Pending consignments.csv',
+            filename: 'Booked-Pending-consignments.csv',
           }}
           detailInfo={
             <TotalDetails

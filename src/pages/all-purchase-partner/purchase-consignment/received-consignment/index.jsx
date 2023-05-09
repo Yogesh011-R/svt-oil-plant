@@ -273,7 +273,7 @@ const ReceivedConsignment = () => {
               shortQuantity: 'Short Quantity',
               payment: 'Payment',
             },
-            filename: 'Booked-Purchase-consignments.csv',
+            filename: 'Received-consignments.csv',
           }}
           detailInfo={
             <>

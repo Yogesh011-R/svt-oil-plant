@@ -156,13 +156,6 @@ axios.interceptors.response.use(
 //   }
 // );
 
-AWS.config.update({
-  accessKeyId: 'AKIAWUM26NDP6EKQQLJT',
-  secretAccessKey: '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',
-  region: 'ap-south-1',
-  signatureVersion: 'v4',
-});
-
 function App() {
   const queryClient = new QueryClient({
     defaultOptions: {
