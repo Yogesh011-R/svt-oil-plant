@@ -11,6 +11,7 @@ import { useDispatch } from 'react-redux';
 import { addToast } from '../../../redux/features/toastSlice';
 import { ERROR, SUCCESS } from '../../../utils/constant';
 import { handleError } from '../../../utils/helper';
+import Loading from '../../Loading';
 
 const PurchasePartnerForm = ({ apiFunction, values }) => {
   const navigate = useNavigate();
@@ -67,6 +68,8 @@ const PurchasePartnerForm = ({ apiFunction, values }) => {
   });
   return (
     <div className='p-6'>
+      {isLoading && <Loading />}
+
       <Formik
         initialValues={values || initialValues}
         validationSchema={validationSchema}

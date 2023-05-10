@@ -14,8 +14,14 @@ import { loginUser, logoutUser } from './redux/features/authSlice';
 
 // @Lazy import
 const Login = lazy(() => import('./pages/auth/login'));
-const ForgotPassword = lazy(() => import('./pages/auth/forgot-password'));
 const VerifyOtp = lazy(() => import('./pages/auth/verify-otp'));
+const ResetUser = lazy(() => import('./pages/auth/reset-password/reset-user'));
+const ResetVerifyOtp = lazy(() =>
+  import('./pages/auth/reset-password/verify-otp')
+);
+const ForgotPassword = lazy(() =>
+  import('./pages/auth/reset-password/forgot-password')
+);
 
 axios.interceptors.request.use(
   config => {
@@ -178,8 +184,10 @@ function App() {
             {/* /auth */}
             <Route path='auth' element={<AuthLayout />}>
               <Route path='login' element={<Login />} />
-              <Route path='forgot-password' element={<ForgotPassword />} />
               <Route path='verify-otp' element={<VerifyOtp />} />
+              <Route path='forgot-password' element={<ForgotPassword />} />
+              <Route path='verify-user' element={<ResetUser />} />
+              <Route path='reset-verify-otp' element={<ResetVerifyOtp />} />
               <Route
                 path='*'
                 element={<Navigate to='/auth/login' replace={true} />}

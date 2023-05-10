@@ -2,6 +2,7 @@ import { useFormikContext } from 'formik';
 
 const AuthSubmitBtn = ({ text, classes, isSubmitting }) => {
   const { dirty, isValid, errors } = useFormikContext();
+
   return (
     <button
       type='submit'

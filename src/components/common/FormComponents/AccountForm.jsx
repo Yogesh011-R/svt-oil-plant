@@ -11,6 +11,7 @@ import { decrypt, handleError } from '../../../utils/helper';
 import { addToast } from '../../../redux/features/toastSlice';
 import { useDispatch } from 'react-redux';
 import CustomSelect from '../Form/CustomSelect';
+import Loading from '../../Loading';
 
 const AccountForm = ({ apiFunction, editValue, pricePerKG }) => {
   const { partnerId, consignmentId: bookedConsignmentId } = useParams();
@@ -80,151 +81,154 @@ const AccountForm = ({ apiFunction, editValue, pricePerKG }) => {
 
   const fileInput = useRef(null);
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={(values, { setFieldError }) => {
-        if (editValue) {
-          values.id = editValue.id;
-        }
+    <>
+      {isLoading && <Loading />}
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={(values, { setFieldError }) => {
+          if (editValue) {
+            values.id = editValue.id;
+          }
 
-        mutate(values);
-      }}
-      validateOnMount={editValue && true}
-    >
-      {formik => {
-        const {
-          values,
-          errors,
-          dirty,
-          setFieldValue,
-          setFieldError,
-          validateForm,
-        } = formik;
+          mutate(values);
+        }}
+        validateOnMount={editValue && true}
+      >
+        {formik => {
+          const {
+            values,
+            errors,
+            dirty,
+            setFieldValue,
+            setFieldError,
+            validateForm,
+          } = formik;
 
-        return (
-          <Form className='form px-3'>
-            <div className='grid lg:grid-cols-2 gap-x-10 '>
-              <div className='relative  w-full'>
-                <Input
-                  label='Full Name*'
-                  placeholder='Enter full name*'
-                  id='name'
-                  name='name'
-                  disabled={isLoading}
-                />
-              </div>
-              <div className=' w-full'>
-                <Input
-                  label='Phone number'
-                  name='phoneNo'
-                  id='phoneNo'
-                  placeholder='Enter phone number'
-                  type='number'
-                  disabled={isLoading}
-                />
-              </div>
-              <div className=' w-full'>
-                <Input
-                  label='Email id*'
-                  name='email'
-                  id='email'
-                  type='email'
-                  placeholder='Enter email id'
-                  disabled={isLoading}
-                />
-              </div>
-              <div className=' w-full'>
-                <CustomSelect
-                  name='status'
-                  id='status'
-                  label='Status'
-                  placeholder='Status'
-                  disabled={isLoading}
-                  options={[
-                    { id: 1, value: 'active', label: 'Active' },
-                    { id: 2, value: 'inactive', label: 'Inactive' },
-                  ]}
-                />
-              </div>
-              <div className=' w-full'>
-                <Input
-                  disabled={isLoading}
-                  label='Password*'
-                  name='password'
-                  id='password'
-                  placeholder='Enter password*'
-                  type='password'
-                />
-              </div>
+          return (
+            <Form className='form px-3'>
+              <div className='grid lg:grid-cols-2 gap-x-10 '>
+                <div className='relative  w-full'>
+                  <Input
+                    label='Full Name*'
+                    placeholder='Enter full name*'
+                    id='name'
+                    name='name'
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className=' w-full'>
+                  <Input
+                    label='Phone number'
+                    name='phoneNo'
+                    id='phoneNo'
+                    placeholder='Enter phone number'
+                    type='number'
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className=' w-full'>
+                  <Input
+                    label='Email id'
+                    name='email'
+                    id='email'
+                    type='email'
+                    placeholder='Enter email id'
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className=' w-full'>
+                  <CustomSelect
+                    name='status'
+                    id='status'
+                    label='Status'
+                    placeholder='Status'
+                    disabled={isLoading}
+                    options={[
+                      { id: 1, value: 'active', label: 'Active' },
+                      { id: 2, value: 'inactive', label: 'Inactive' },
+                    ]}
+                  />
+                </div>
+                <div className=' w-full'>
+                  <Input
+                    disabled={isLoading}
+                    label='Password*'
+                    name='password'
+                    id='password'
+                    placeholder='Enter password*'
+                    type='password'
+                  />
+                </div>
 
-              <div className=' w-full'>
-                <Input
-                  label='Confirm password*'
-                  name='passwordConfirm'
-                  id='passwordConfirm'
-                  placeholder='Enter confirm password'
-                  type='password'
-                  disabled={isLoading}
-                />
+                <div className=' w-full'>
+                  <Input
+                    label='Confirm password*'
+                    name='passwordConfirm'
+                    id='passwordConfirm'
+                    placeholder='Enter confirm password'
+                    type='password'
+                    disabled={isLoading}
+                  />
+                </div>
               </div>
-            </div>
-            <div>
-              <h1 className='text-sm'>User Photo</h1>
-              {uploadImg && (
-                <img
-                  src={uploadImg}
-                  alt=''
-                  className='object-cover rounded-full w-16 h-16'
-                />
-              )}
-              <div className='relative'>
+              <div>
+                <h1 className='text-sm'>User Photo</h1>
+                {uploadImg && (
+                  <img
+                    src={uploadImg}
+                    alt=''
+                    className='object-cover rounded-full w-16 h-16'
+                  />
+                )}
+                <div className='relative'>
+                  <button
+                    onClick={() => {
+                      fileInput.current.click();
+                    }}
+                    type='button'
+                    className='bg-secondary my-2 p-1 px-2.5 rounded-[5px] text-white text-sm'
+                  >
+                    Upload Image
+                  </button>
+
+                  <input
+                    className='absolute pointer-events-none left-0'
+                    ref={fileInput}
+                    type='file'
+                    onChange={handleUploadImage}
+                    accept='image/png, image/gif, image/jpeg'
+                  />
+                </div>
+                <p className='text-[#999999] text-xs'>
+                  Recommended image size is ---x---
+                </p>
+              </div>
+              <div className='w-full h-[0.5px] bg-black/30 mt-5'></div>
+              <div className='flex space-x-3 justify-end mt-8  w-full'>
                 <button
                   onClick={() => {
-                    fileInput.current.click();
+                    navigate(`/account`, {
+                      replace: true,
+                    });
                   }}
+                  disabled={isLoading}
                   type='button'
-                  className='bg-secondary my-2 p-1 px-2.5 rounded-[5px] text-white text-sm'
+                  className='py-[11px]  font-medium max-w-[98.31px] text-sm  rounded-md px-5 bg-black bg-opacity-20'
+                  to='/all-purchase-partner'
                 >
-                  Upload Image
+                  Close
                 </button>
-
-                <input
-                  className='absolute pointer-events-none left-0'
-                  ref={fileInput}
-                  type='file'
-                  onChange={handleUploadImage}
-                  accept='image/png, image/gif, image/jpeg'
+                <SubmitBtn
+                  text={editValue ? 'Update' : 'Submit'}
+                  isSubmitting={isLoading}
                 />
               </div>
-              <p className='text-[#999999] text-xs'>
-                Recommended image size is ---x---
-              </p>
-            </div>
-            <div className='w-full h-[0.5px] bg-black/30 mt-5'></div>
-            <div className='flex space-x-3 justify-end mt-8  w-full'>
-              <button
-                onClick={() => {
-                  navigate(`/account`, {
-                    replace: true,
-                  });
-                }}
-                disabled={isLoading}
-                type='button'
-                className='py-[11px]  font-medium max-w-[98.31px] text-sm  rounded-md px-5 bg-black bg-opacity-20'
-                to='/all-purchase-partner'
-              >
-                Close
-              </button>
-              <SubmitBtn
-                text={editValue ? 'Update' : 'Submit'}
-                isSubmitting={isLoading}
-              />
-            </div>
-          </Form>
-        );
-      }}
-    </Formik>
+            </Form>
+          );
+        }}
+      </Formik>
+    </>
   );
 };
 

@@ -312,7 +312,6 @@ export const uploadToS3 = async (file, name) => {
 
   try {
     const data = await s3.send(command);
-    console.log('🚀 ~ file: helper.js:311 ~ uploadToS3 ~ data:', data);
     // process data.
   } catch (error) {
     // error handling.

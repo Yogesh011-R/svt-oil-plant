@@ -15,6 +15,7 @@ import axios from 'axios';
 import { SERVER_URL } from '../../../utils/config';
 import CustomAsyncSelect from '../Form/CustomAsyncSelect';
 import AsyncSelect from 'react-select/async';
+import Loading from '../../Loading';
 
 const BookingConsignmentForm = ({ apiFunction, editValue }) => {
   const getOilTypes = async () => {
@@ -52,6 +53,7 @@ const BookingConsignmentForm = ({ apiFunction, editValue }) => {
     rate: editValue ? editValue.rate : '',
     advancePayment: editValue ? editValue.advancePayment : '',
     status: editValue ? editValue.status : 'pending',
+    gst: editValue ? editValue.gst : '',
   };
   const validationSchema = Yup.object({
     bookingDate: Yup.string('Please Select a Date').required(
@@ -62,6 +64,7 @@ const BookingConsignmentForm = ({ apiFunction, editValue }) => {
     bookedQuantity: Yup.string().required('Booked quantity is required'),
     rate: Yup.string().required('Rate is required'),
     advancePayment: Yup.string(),
+    gst: Yup.string(),
   });
 
   const {
@@ -135,6 +138,7 @@ const BookingConsignmentForm = ({ apiFunction, editValue }) => {
 
   return (
     <div className='p-6'>
+      {isLoading && <Loading />}
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -307,6 +311,15 @@ const BookingConsignmentForm = ({ apiFunction, editValue }) => {
                   name='bookedQuantity'
                   id='bookedQuantity'
                   placeholder='Enter Booked Quantity'
+                  disabled={isLoading}
+                />
+              </div>
+              <div className='max-w-[360px] w-full'>
+                <Input
+                  label='GST'
+                  name='gst'
+                  id='gst'
+                  placeholder='Enter GST percentage'
                   disabled={isLoading}
                 />
               </div>

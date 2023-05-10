@@ -16,6 +16,7 @@ import { calculateGST, combineToSingleObject } from '../../../../utils/helper';
 import { showModal } from '../../../../redux/features/modalSlice';
 import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
+import Loading from '../../../../components/Loading';
 
 const getReceivedConsignments = async ({ queryKey }) => {
   const [_, bookedConsignmentId, limit, page, query] = queryKey;
@@ -223,6 +224,7 @@ const ReceivedConsignment = () => {
 
   return (
     <div>
+      {isLoading && <Loading />}
       <BreadCrumb
         paths={[
           { id: 1, name: 'Home', to: '/' },

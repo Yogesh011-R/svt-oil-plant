@@ -19,13 +19,11 @@ import { showModal } from '../../../redux/features/modalSlice';
 import { useDispatch } from 'react-redux';
 import { combineToSingleObject } from '../../../utils/helper';
 import { useDebounce } from 'use-debounce';
+import Loading from '../../../components/Loading';
 
 const getBookedConsignments = async ({ queryKey }) => {
   const [_, partnerId, page, limit, query, showPending, dates] = queryKey;
-  console.log(
-    '🚀 ~ file: index.jsx:25 ~ getBookedConsignments ~ dates:',
-    dates
-  );
+
   const res = await axios.get(
     `${SERVER_URL}/soudha/consignment/${partnerId}?page=${page + 1}&limit=${
       limit?.value || 10
@@ -334,6 +332,7 @@ const PurchaseSoudha = () => {
 
   return (
     <div>
+      {isLoading && <Loading />}
       <BreadCrumb
         paths={[
           { id: 1, name: 'Home', to: '/' },

@@ -102,7 +102,7 @@ const Login = () => {
           <div className='text-center mt-2'>
             <h2 className='mb-2'>Test Account:</h2>
             <h3>Name: admin</h3>
-            <h3>Password: password@1</h3>
+            <h3>Password: Pa$$w0rd!</h3>
           </div>
           <Formik
             initialValues={initialValues}
@@ -137,7 +137,7 @@ const Login = () => {
               </div>
               <div className='py-4'>
                 <Link
-                  to='/auth/forgot-password'
+                  to='/auth/verify-user'
                   className='text-right text-sm block text-black text-opacity-60 font-medium'
                 >
                   Forgot password?

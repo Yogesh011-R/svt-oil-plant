@@ -17,6 +17,7 @@ import { useDispatch } from 'react-redux';
 import { showModal } from '../../redux/features/modalSlice';
 import { combineToSingleObject } from '../../utils/helper';
 import { useDebounce } from 'use-debounce';
+import Loading from '../../components/Loading';
 
 const getAllPartners = async ({ queryKey }) => {
   const [_, limit, page, query] = queryKey;
@@ -266,6 +267,7 @@ const PurchaseSoudha = () => {
 
   return (
     <div>
+      {isLoading && <Loading />}
       <BreadCrumb
         paths={[{ id: 1, name: 'Home', to: '/' }]}
         currentPage='New Purchase soudha'
