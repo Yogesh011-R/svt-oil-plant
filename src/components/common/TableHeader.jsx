@@ -12,6 +12,7 @@ import axios from 'axios';
 import { addToast } from '../../redux/features/toastSlice';
 import { ERROR, SUCCESS } from '../../utils/constant';
 import { format } from 'date-fns';
+import { WHATS_APP_ACCESS_TOKEN } from '../../utils/config';
 
 const TableHeader = ({
   title,
@@ -55,9 +56,7 @@ const TableHeader = ({
         },
         {
           headers: {
-            Authorization:
-              'Bearer EABWTqd23LTgBADlEtF41MAQ2K7iME5KCbbtBZCrK2JzfzTI2xa6z5pvNZATvw0svcJTf7CAu6nJo2PbQbO4ZAVYR7wCt9T5zvnErx2ZCBgE2zT8pFSglaRkFDvuCdIXFycDRSgaeFVguwOXyiYHUgohIe3TFipo2RrHQU83C0MZCCvRxFDRlCrmNYDHbdWgALkhtE8t9DGadY4mZArvMcZB',
-
+            Authorization: `Bearer ${WHATS_APP_ACCESS_TOKEN}`,
             Accept: 'application/json',
           },
         }
