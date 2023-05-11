@@ -52,8 +52,16 @@ const PendingConsignment = () => {
       Header: 'Pending  quantity ',
       accessor: 'pendingQuantity',
       Cell: ({ row }) => {
+        console.log(
+          '🚀 ~ file: pending-consignment.jsx:60 ~ PendingConsignment ~ row:',
+          row
+        );
+
         return (
-          <span>{row.original?.totalInfo?.totalPendingQuantity || '-'}</span>
+          <span>
+            {row.original?.receivedConsignTotalInfo?.totalPendingConsignment ||
+              '-'}
+          </span>
         );
       },
     },
@@ -106,11 +114,17 @@ const PendingConsignment = () => {
     {
       select: data => {
         const newResult = data.pendingPartners.results.map((item, idx) => {
+          console.log(data.receivedConsignTotalInfo.flat());
           return {
             ...item,
             totalInfo: data.totalInfo.filter(info => {
               return info.id === item.id;
             })[0]?.totalInfo,
+            receivedConsignTotalInfo: data.receivedConsignTotalInfo
+              .flat()
+              .filter(info => {
+                return info.id === item.id;
+              })[0]?.totalInfo,
           };
         });
 
