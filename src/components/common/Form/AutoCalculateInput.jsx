@@ -28,8 +28,7 @@ const AutoCalculateInput = ({
     //Unload Amount
     const shortAmount = +values.billingQuantity - +values.unloadQuantity;
 
-    const payment =
-      +values?.otherAmount && +values.totalBillingAmount - +values?.otherAmount;
+    const payment = +values.totalBillingAmount - +values?.otherAmount;
 
     setFieldValue('shortQuantity', shortAmount || '');
 

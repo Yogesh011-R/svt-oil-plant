@@ -12,7 +12,10 @@ import axios from 'axios';
 import { addToast } from '../../redux/features/toastSlice';
 import { ERROR, SUCCESS } from '../../utils/constant';
 import { format } from 'date-fns';
-import { WHATS_APP_ACCESS_TOKEN } from '../../utils/config';
+import {
+  WHATSAPP_RECIPIENT_NUMBER,
+  WHATS_APP_ACCESS_TOKEN,
+} from '../../utils/config';
 
 const TableHeader = ({
   title,
@@ -47,7 +50,7 @@ const TableHeader = ({
         {
           messaging_product: 'whatsapp',
           recipient_type: 'individual',
-          to: '919739969166',
+          to: `91${WHATSAPP_RECIPIENT_NUMBER}`,
           type: 'document',
           document: {
             link,

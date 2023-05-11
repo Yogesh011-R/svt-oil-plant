@@ -194,7 +194,7 @@ const ReceivedConsignmentForm = ({ apiFunction, editValue, pricePerKG }) => {
                 </div>
 
                 <div className=' w-full'>
-                  <Input
+                  <AutoCalculateInput
                     label='Payment'
                     name='payment'
                     id='payment'
