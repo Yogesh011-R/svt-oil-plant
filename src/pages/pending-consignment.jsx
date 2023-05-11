@@ -52,11 +52,6 @@ const PendingConsignment = () => {
       Header: 'Pending  quantity ',
       accessor: 'pendingQuantity',
       Cell: ({ row }) => {
-        console.log(
-          '🚀 ~ file: pending-consignment.jsx:60 ~ PendingConsignment ~ row:',
-          row
-        );
-
         return (
           <span>
             {row.original?.receivedConsignTotalInfo?.totalPendingConsignment ||
@@ -113,29 +108,71 @@ const PendingConsignment = () => {
     getAllPendingConsignments,
     {
       select: data => {
+        const mergedReceivedConsignments = Object.values(
+          data.receivedConsignTotalInfo.flat().reduce((acc, curr) => {
+            if (!acc[curr.id]) {
+              acc[curr.id] = {
+                id: curr.id,
+                totalPendingConsignment:
+                  +curr?.totalInfo?.totalPendingConsignment,
+                count: 1,
+              };
+            } else {
+              acc[curr.id].totalPendingConsignment +=
+                +curr?.totalInfo?.totalPendingConsignment;
+
+              // acc[curr.id].age += curr.age;
+              acc[curr.id].count += 1;
+            }
+            return acc;
+          }, {})
+        );
+
         const newResult = data.pendingPartners.results.map((item, idx) => {
-          console.log(data.receivedConsignTotalInfo.flat());
           return {
             ...item,
             totalInfo: data.totalInfo.filter(info => {
               return info.id === item.id;
             })[0]?.totalInfo,
-            receivedConsignTotalInfo: data.receivedConsignTotalInfo
-              .flat()
-              .filter(info => {
+            receivedConsignTotalInfo: mergedReceivedConsignments.filter(
+              info => {
                 return info.id === item.id;
-              })[0]?.totalInfo,
+              }
+            )[0],
           };
         });
 
+        // const mergedArray = Object.values(
+        //   data.receivedConsignTotalInfo.flat().reduce((acc, curr) => {
+        //     if (!acc[curr.id]) {
+        //       acc[curr.id] = {
+        //         id: curr.id,
+        //         totalPendingConsignment:
+        //           +curr?.totalInfo?.totalPendingConsignment,
+        //         count: 1,
+        //       };
+        //     } else {
+        //       acc[curr.id].totalPendingConsignment +=
+        //         +curr?.totalInfo?.totalPendingConsignment;
+
+        //       // acc[curr.id].age += curr.age;
+        //       acc[curr.id].count += 1;
+        //     }
+        //     return acc;
+        //   }, {})
+        // );
+        // console.log(
+        //   '🚀 ~ file: pending-consignment.jsx:153 ~ PendingConsignment ~ mergedArray:',
+        //   mergedArray
+        // );
+
         const totalFu = () => {
           let totalPendingConsignment = 0;
-          for (let i = 0; i < data?.receivedConsignTotalInfo?.length; i++) {
-            if (data?.receivedConsignTotalInfo[i]?.totalInfo) {
+          for (let i = 0; i < mergedReceivedConsignments?.length; i++) {
+            if (mergedReceivedConsignments[i]?.totalPendingConsignment) {
               totalPendingConsignment =
                 totalPendingConsignment +
-                +data?.receivedConsignTotalInfo[i]?.totalInfo
-                  ?.totalPendingConsignment;
+                mergedReceivedConsignments[i]?.totalPendingConsignment;
             }
           }
 
