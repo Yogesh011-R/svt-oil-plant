@@ -304,22 +304,25 @@ const ReceivedConsignment = () => {
                       name: 'Total Pending consignment',
                       value: data.totalInfo?.totalPendingConsignment || '-',
                     },
-                    // {
-                    //   id: 2,
-                    //   name: 'Total payment pending',
-                    //   value:
-                    //     // '₹' +
-                    //     `₹ ${
-                    //       +data?.totalInfo?.pendingPayment +
-                    //       +data?.bookedConsignment.advancePayment -
-                    //       +data?.bookedConsignment.bookedQuantity *
-                    //         (+data.bookedConsignment.rate / 10)
-                    //     }`,
-                    // },
+                    {
+                      id: 2,
+                      name: 'Total Amount payed',
+                      value:
+                        data.totalInfo?.totalAmountPayed +
+                          data?.bookedConsignment?.advancePayment || '-',
+                      // '₹' +
+                      // `₹ ${
+                      //   +data?.totalInfo?.pendingPayment +
+                      //   +data?.bookedConsignment.advancePayment -
+                      //   +data?.bookedConsignment.bookedQuantity *
+                      //     (+data.bookedConsignment.rate / 10)
+                      // }`,
+                    },
                     {
                       id: 3,
                       name: 'Difference amount',
                       value: '₹' + data?.totalInfo?.differenceAmount,
+                      highlight: true,
                     },
                   ]}
                 />

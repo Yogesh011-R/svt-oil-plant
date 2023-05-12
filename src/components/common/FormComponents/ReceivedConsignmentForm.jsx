@@ -18,14 +18,10 @@ const ReceivedConsignmentForm = ({
   editValue,
   bookedConsignmentInfo,
 }) => {
-  console.log(
-    '🚀 ~ file: ReceivedConsignmentForm.jsx:17 ~ ReceivedConsignmentForm ~ bookedConsignmentInfo:',
-    bookedConsignmentInfo
-  );
-
   if (!bookedConsignmentInfo) {
-    <Navigate replace to='/' />;
+    return <Navigate replace to='/' />;
   }
+
   const { partnerId, consignmentId: bookedConsignmentId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -94,14 +90,15 @@ const ReceivedConsignmentForm = ({
             delete values.bookedConsignmentId;
           }
 
-          values.difference =
-            +bookedConsignmentInfo.bookedQuantity -
-            values.billingQuantity * (+values.billingRate / 10) +
-            +bookedConsignmentInfo.bookedQuantity -
-            (values.billingQuantity *
-              (+values.billingRate / 10) *
-              bookedConsignmentInfo.gst) /
-              100;
+          const gst =
+            +values.billingQuantity *
+            (+bookedConsignmentInfo.rate / 10) *
+            (+bookedConsignmentInfo.gst / 100);
+
+          const totalValue =
+            +values.billingQuantity * (+bookedConsignmentInfo.rate / 10);
+
+          values.difference = totalValue + gst - values.totalBillingAmount;
 
           values.pendingConsignment =
             +bookedConsignmentInfo.bookedQuantity - values.billingQuantity;
@@ -148,6 +145,7 @@ const ReceivedConsignmentForm = ({
                     name='otherAmount'
                     id='otherAmount'
                     placeholder='Enter amount'
+                    type='number'
                     disabled={isLoading}
                   />
                 </div>

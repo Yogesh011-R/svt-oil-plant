@@ -45,7 +45,7 @@ const AddReceivedSoudha = () => {
         <div className='p-6'>
           <ReceivedConsignmentForm
             apiFunction={addReceivedConsignment}
-            bookedConsignmentInfo={state.bookedConsignment}
+            bookedConsignmentInfo={state?.bookedConsignment}
           />
           {/* <Formik
             initialValues={initialValues}

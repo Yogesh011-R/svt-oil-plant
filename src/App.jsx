@@ -107,9 +107,6 @@ axios.interceptors.response.use(
 //     // isFirst -> for invalid refreshToken response handling
 //     // originalRequest._retry -> for invalid accessToken response handling
 
-//     console.log('🚀 ~ file: App.jsx:40 ~ error:', error);
-//     console.log('🚀 ~ file: App.jsx:41 ~ originalRequest:', originalRequest);
-
 //     if (
 //       isFirst &&
 //       error?.response?.status === 401 &&

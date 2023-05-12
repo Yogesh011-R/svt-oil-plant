@@ -109,7 +109,11 @@ const PendingConsignment = () => {
     {
       select: data => {
         const mergedReceivedConsignments = Object.values(
-          data.receivedConsignTotalInfo.flat().reduce((acc, curr) => {
+          data.totalInfo.flat().reduce((acc, curr) => {
+            console.log(
+              '🚀 ~ file: pending-consignment.jsx:113 ~ data.receivedConsignTotalInfo.flat ~ curr:',
+              curr
+            );
             if (!acc[curr.id]) {
               acc[curr.id] = {
                 id: curr.id,
@@ -126,6 +130,10 @@ const PendingConsignment = () => {
             }
             return acc;
           }, {})
+        );
+        console.log(
+          '🚀 ~ file: pending-consignment.jsx:129 ~ data.receivedConsignTotalInfo.flat ~ data.receivedConsignTotalInfo:',
+          data.receivedConsignTotalInfo
         );
 
         const newResult = data.pendingPartners.results.map((item, idx) => {
@@ -161,10 +169,6 @@ const PendingConsignment = () => {
         //     return acc;
         //   }, {})
         // );
-        // console.log(
-        //   '🚀 ~ file: pending-consignment.jsx:153 ~ PendingConsignment ~ mergedArray:',
-        //   mergedArray
-        // );
 
         const totalFu = () => {
           let totalPendingConsignment = 0;
@@ -188,6 +192,10 @@ const PendingConsignment = () => {
         };
       },
     }
+  );
+  console.log(
+    '🚀 ~ file: pending-consignment.jsx:107 ~ PendingConsignment ~ data:',
+    data
   );
 
   let component = null;

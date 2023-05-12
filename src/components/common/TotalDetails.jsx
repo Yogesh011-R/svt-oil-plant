@@ -10,7 +10,7 @@ const TotalDetails = ({ totalInfo }) => {
       <div className='px-6 pt-3'>
         <div className=' border-[0.5px] w-fit border-black border-opacity-30'>
           {totalInfo.map(item => {
-            const { name, id, value } = item;
+            const { name, id, value, highlight } = item;
 
             return (
               <div
@@ -20,7 +20,13 @@ const TotalDetails = ({ totalInfo }) => {
                 <div className='py-2.5 px-3 '>
                   <h2>{name}</h2>
                 </div>
-                <div className='py-2.5 px-3 text-center'>{value}</div>
+                <div
+                  className={`${
+                    highlight && 'text-red font-semibold  '
+                  } py-2.5 px-3 text-center`}
+                >
+                  {value}
+                </div>
               </div>
             );
           })}

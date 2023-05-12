@@ -24,10 +24,6 @@ const EditReceivedSoudha = () => {
   const { partnerId, consignmentId: bookedConsignmentId } = useParams();
 
   const { state } = useLocation();
-  console.log(
-    '🚀 ~ file: edit-received-soudha.jsx:27 ~ EditReceivedSoudha ~ state:',
-    state
-  );
 
   return (
     <div>
@@ -51,7 +47,7 @@ const EditReceivedSoudha = () => {
           <ReceivedConsignmentForm
             editValue={state}
             apiFunction={editReceivedConsignment}
-            bookedConsignmentInfo={state.bookedConsignment}
+            bookedConsignmentInfo={state?.bookedConsignment}
           />
         </div>
       </div>
