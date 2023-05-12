@@ -79,6 +79,13 @@ const ReceivedConsignment = () => {
     {
       Header: 'Difference',
       accessor: 'difference',
+      Cell: ({ row }) => {
+        return (
+          <span className='text-red font-semibold'>
+            {row.original.difference}
+          </span>
+        );
+      },
     },
     {
       Header: 'Vehicle no',
@@ -119,7 +126,7 @@ const ReceivedConsignment = () => {
             <Link
               state={{
                 ...row.original,
-                pricePerKG: data?.bookedConsignment?.rate,
+                bookedConsignment: data?.bookedConsignment,
               }}
               to='edit-received-soudha'
               type='button'
@@ -184,19 +191,28 @@ const ReceivedConsignment = () => {
     );
   } else if (isLoading) {
     component = <p className='mt-6 ml-4 pb-10 text-center'>Loading...</p>;
-  } else if (!data.receivedConsignments.results.length) {
+  } else if (!data?.receivedConsignments.results.length) {
     component = (
       <div className='py-20 flex flex-col items-center justify-center'>
         <p className=' text-center mb-5'>
-          No Received consignment details added yet!
+          No Received consignment details
+          {searchValue ? (
+            <span>
+              for the value <span className='font-bold '>{searchValue}</span>
+            </span>
+          ) : (
+            'added yet!'
+          )}
         </p>
-        <div>
-          <AddBtn
-            text='Add new received Soudha'
-            link='add-received-soudha'
-            state={{ pricePerKG: data.bookedConsignment.rate }}
-          />
-        </div>
+        {!searchValue && (
+          <div>
+            <AddBtn
+              state={{ bookedConsignment: data?.bookedConsignment }}
+              text='Add new received Soudha'
+              link='add-received-soudha'
+            />
+          </div>
+        )}
       </div>
     );
   } else {
@@ -255,13 +271,14 @@ const ReceivedConsignment = () => {
             bookedQuantity: data?.bookedConsignment?.bookedQuantity,
             rate: data?.bookedConsignment?.rate,
             advancePayment: data?.bookedConsignment?.advancePayment,
+            gst: data?.bookedConsignment?.gst,
           }}
           morePartnerDetails={true}
           detailsData={data?.receivedConsignments.results}
           whatsApp={true}
           btnText='Add new received Soudha '
           addLink='add-received-soudha'
-          linkState={{ pricePerKG: data?.bookedConsignment?.rate }}
+          linkState={{ bookedConsignment: data?.bookedConsignment }}
           downloadInfo={{
             data: combineToSingleObject(data?.receivedConsignments?.results),
             fields: {
@@ -282,25 +299,23 @@ const ReceivedConsignment = () => {
               {data?.totalInfo && (
                 <TotalDetails
                   totalInfo={[
-                    // {
-                    //   id: 1,
-                    //   name: 'Total Pending consignment',
-                    //   value:
-                    //     data.bookedConsignment?.bookedQuantity -
-                    //     data.totalInfo?.totalPendingConsignment,
-                    // },
                     {
-                      id: 2,
-                      name: 'Total payment pending',
-                      value:
-                        // '₹' +
-                        `₹ ${
-                          +data?.totalInfo?.pendingPayment +
-                          +data?.bookedConsignment.advancePayment -
-                          +data?.bookedConsignment.bookedQuantity *
-                            (+data.bookedConsignment.rate / 10)
-                        }`,
+                      id: 1,
+                      name: 'Total Pending consignment',
+                      value: data.totalInfo?.totalPendingConsignment || '-',
                     },
+                    // {
+                    //   id: 2,
+                    //   name: 'Total payment pending',
+                    //   value:
+                    //     // '₹' +
+                    //     `₹ ${
+                    //       +data?.totalInfo?.pendingPayment +
+                    //       +data?.bookedConsignment.advancePayment -
+                    //       +data?.bookedConsignment.bookedQuantity *
+                    //         (+data.bookedConsignment.rate / 10)
+                    //     }`,
+                    // },
                     {
                       id: 3,
                       name: 'Difference amount',

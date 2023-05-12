@@ -4,7 +4,7 @@ import DatePicker from '../Form/DatePicker';
 import Input from '../Form/Input';
 import SubmitBtn from '../Form/SubmitBtn';
 import { useMutation, useQueryClient } from 'react-query';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
 import { ERROR, SUCCESS } from '../../../utils/constant';
 import { handleError } from '../../../utils/helper';
@@ -13,7 +13,19 @@ import { useDispatch } from 'react-redux';
 import AutoCalculateInput from '../Form/AutoCalculateInput';
 import Loading from '../../Loading';
 
-const ReceivedConsignmentForm = ({ apiFunction, editValue, pricePerKG }) => {
+const ReceivedConsignmentForm = ({
+  apiFunction,
+  editValue,
+  bookedConsignmentInfo,
+}) => {
+  console.log(
+    '🚀 ~ file: ReceivedConsignmentForm.jsx:17 ~ ReceivedConsignmentForm ~ bookedConsignmentInfo:',
+    bookedConsignmentInfo
+  );
+
+  if (!bookedConsignmentInfo) {
+    <Navigate replace to='/' />;
+  }
   const { partnerId, consignmentId: bookedConsignmentId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -82,16 +94,28 @@ const ReceivedConsignmentForm = ({ apiFunction, editValue, pricePerKG }) => {
             delete values.bookedConsignmentId;
           }
 
-          if (editValue) {
-            values.difference =
-              +values.billingQuantity * (+values.billingRate / 10) -
-              +values.billingQuantity * (+editValue.pricePerKG / 10);
-          }
-          if (pricePerKG) {
-            values.difference =
-              +values.billingQuantity * (+values.billingRate / 10) -
-              +values.billingQuantity * (+pricePerKG / 10);
-          }
+          values.difference =
+            +bookedConsignmentInfo.bookedQuantity -
+            values.billingQuantity * (+values.billingRate / 10) +
+            +bookedConsignmentInfo.bookedQuantity -
+            (values.billingQuantity *
+              (+values.billingRate / 10) *
+              bookedConsignmentInfo.gst) /
+              100;
+
+          values.pendingConsignment =
+            +bookedConsignmentInfo.bookedQuantity - values.billingQuantity;
+
+          // if (editValue) {
+          //   values.difference =
+          //     +values.billingQuantity * (+values.billingRate / 10) -
+          //     +values.billingQuantity * (+editValue.pricePerKG / 10);
+          // }
+          // if (pricePerKG) {
+          //   values.difference =
+          //     +values.billingQuantity * (+values.billingRate / 10) -
+          //     +values.billingQuantity * (+pricePerKG / 10);
+          // }
 
           mutate(values);
         }}

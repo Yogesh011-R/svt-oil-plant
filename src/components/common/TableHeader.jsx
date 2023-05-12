@@ -85,6 +85,12 @@ const TableHeader = ({
     }
   };
 
+  const totalBookedQuantity =
+    partnerDetails?.bookedQuantity * (partnerDetails?.rate / 10);
+
+  const totalBookedQuantityWithGST =
+    totalBookedQuantity * (partnerDetails?.gst / 100);
+
   return (
     <div>
       <div className='p-[18px] border-b flex items-center justify-between'>
@@ -128,12 +134,16 @@ const TableHeader = ({
                   <div>Price for 10KG</div>
                   <div>:</div>
                   <div className='ml-3'>₹{partnerDetails.rate}</div>
+
+                  <div>GST</div>
+                  <div>:</div>
+                  <div className='ml-3'>{partnerDetails.gst + '%' || '-'}</div>
                   <div>Total Booked rate</div>
                   <div>:</div>
                   <div className='ml-3'>
                     {'₹' +
-                      partnerDetails.bookedQuantity *
-                        (partnerDetails.rate / 10) || '-'}
+                      `${+totalBookedQuantity + +totalBookedQuantityWithGST}` ||
+                      '-'}
                   </div>
                   <div>Advance Payment</div>
                   <div>:</div>

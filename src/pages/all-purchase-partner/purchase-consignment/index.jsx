@@ -80,7 +80,7 @@ const PurchaseSoudha = () => {
       accessor: 'differenceAmount',
       Cell: ({ row }) => {
         return (
-          <span>
+          <span className='text-red font-semibold'>
             {row?.original?.totalInfo?.differenceAmount
               ? '₹' + row?.original?.totalInfo?.differenceAmount
               : '-'}
@@ -91,15 +91,13 @@ const PurchaseSoudha = () => {
     {
       Header: 'Pending consignment',
       accessor: 'pendingConsignment',
-      Cell: ({ row }) => {
-        return (
-          <span>
-            {row?.original?.totalInfo?.totalPendingConsignment
-              ? row?.original?.totalInfo?.totalPendingConsignment
-              : '-'}
-          </span>
-        );
-      },
+      // Cell: ({ row }) => {
+      //   return (
+      //     <span>
+      //       {row?.original?.totalInfo?.totalPendingConsignment || '-'}
+      //     </span>
+      //   );
+      // },
     },
     {
       Header: 'Soudha details',
@@ -246,21 +244,16 @@ const PurchaseSoudha = () => {
         });
 
         const totalFu = () => {
-          let totalPendingConsignment = 0,
-            differenceAmount = 0;
+          let differenceAmount = 0;
           for (let i = 0; i < data?.receivedConsignTotalInfo?.length; i++) {
             if (data?.receivedConsignTotalInfo[i]?.totalInfo) {
-              totalPendingConsignment =
-                totalPendingConsignment +
-                +data?.receivedConsignTotalInfo[i]?.totalInfo
-                  ?.totalPendingConsignment;
               differenceAmount =
                 differenceAmount +
                 +data?.receivedConsignTotalInfo[i]?.totalInfo?.differenceAmount;
             }
           }
 
-          return { totalPendingConsignment, differenceAmount };
+          return { differenceAmount };
         };
 
         return {

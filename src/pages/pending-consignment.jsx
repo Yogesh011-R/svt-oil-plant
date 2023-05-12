@@ -202,7 +202,14 @@ const PendingConsignment = () => {
   } else if (!data?.pendingPartners?.results?.length) {
     component = (
       <div className='py-20 flex flex-col items-center justify-center'>
-        <p className=' text-center mb-5'>No Pending consignments!</p>
+        <p className=' text-center mb-5'>
+          No Pending consignments!{' '}
+          {searchValue && (
+            <span>
+              for the value <span className='font-bold '>{searchValue}</span>
+            </span>
+          )}
+        </p>
       </div>
     );
   } else {
