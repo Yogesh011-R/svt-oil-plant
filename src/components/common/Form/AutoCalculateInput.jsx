@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Field, useField, useFormikContext } from 'formik';
 import ErrorBox from './ErrorBox';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
@@ -15,18 +15,56 @@ const AutoCalculateInput = ({
 
   const [showPassword, setShowPassword] = useState(false);
 
+  // useEffect(() => {
+  //   // totalBillingAmount
+  //   const totalBillingAmount =
+  //     +values.billingQuantity * (+values.billingRate / 10);
+
+  //   const withGST = totalBillingAmount * (values.gst / 100);
+
+  //   setFieldValue('totalBillingAmount', totalBillingAmount + withGST || '');
+  //   //EO totalBillingAmount
+
+  //   //Unload Amount
+  //   const shortAmount = +values.billingQuantity - +values.unloadQuantity;
+  //   let payment = +values.totalBillingAmount - +values?.otherAmount;
+
+  //   // let payment = +values.totalBillingAmount;
+
+  //   if (Math.sign(values?.otherAmount) === 1) {
+  //     payment = values.totalBillingAmount + Math.abs(values?.otherAmount);
+  //   }
+  //   if (Math.sign(values?.otherAmount) === -1) {
+  //     payment = values.totalBillingAmount - Math.abs(values?.otherAmount);
+  //   }
+
+  //   setFieldValue('shortQuantity', shortAmount || '');
+
+  //   setFieldValue('payment', payment || '');
+  // }, [values]);
+
+  const totalBillingAmount = useMemo(() => {
+    const totalBilling = +values.billingQuantity * (+values.billingRate / 10);
+
+    const withGST = totalBilling * (values.gst / 100);
+
+    return totalBilling + withGST;
+  }, [values.billingQuantity, values.billingRate, values.gst]);
+
   useEffect(() => {
-    // totalBillingAmount
-    const totalBillingAmount =
-      +values.billingQuantity * (+values.billingRate / 10);
+    setFieldValue('totalBillingAmount', totalBillingAmount || '');
+  }, [totalBillingAmount]);
 
-    const withGST = totalBillingAmount * (values.gst / 100);
-
-    setFieldValue('totalBillingAmount', totalBillingAmount + withGST || '');
-    //EO totalBillingAmount
-
-    //Unload Amount
+  const shortQuantity = useMemo(() => {
     const shortAmount = +values.billingQuantity - +values.unloadQuantity;
+    return shortAmount;
+  }, [values.billingQuantity, values.unloadQuantity]);
+
+  useEffect(() => {
+    setFieldValue('shortQuantity', shortQuantity || 0);
+  }, [shortQuantity]);
+
+  const paymentValue = useMemo(() => {
     let payment = +values.totalBillingAmount - +values?.otherAmount;
 
     // let payment = +values.totalBillingAmount;
@@ -38,10 +76,12 @@ const AutoCalculateInput = ({
       payment = values.totalBillingAmount - Math.abs(values?.otherAmount);
     }
 
-    setFieldValue('shortQuantity', shortAmount || '');
+    return payment;
+  }, [values.totalBillingAmount, values?.otherAmount]);
 
-    setFieldValue('payment', payment || '');
-  }, [values]);
+  useEffect(() => {
+    setFieldValue('payment', paymentValue || '');
+  }, [paymentValue]);
 
   return (
     <div className='form-group  mb-5 relative'>
