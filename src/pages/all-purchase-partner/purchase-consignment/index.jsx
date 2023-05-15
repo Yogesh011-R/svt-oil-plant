@@ -260,7 +260,7 @@ const PurchaseSoudha = () => {
           (item, idx) => {
             if (item.status === 'completed') return 0;
 
-            const rate = (item.bookedQuantity * item.rate) / 10;
+            const rate = item.bookedQuantity * item.rate;
 
             return rate;
           }
