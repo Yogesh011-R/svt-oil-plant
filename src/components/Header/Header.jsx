@@ -4,10 +4,11 @@ import { IoNotificationsOutline } from 'react-icons/io5';
 import useClose from '../../hooks/useClose';
 import { showModal } from '../../redux/features/modalSlice';
 import { LOGOUT_MODAL } from '../../utils/constant';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Header = () => {
   const dispatch = useDispatch();
+  const { user } = useSelector(state => state.auth);
   const [showDropDown, setShowDropDown] = useState(false);
   const ref = useClose(() => setShowDropDown(false));
   return (
@@ -25,7 +26,7 @@ const Header = () => {
           </button>
           <div className='flex items-center space-x-2 relative'>
             <div className='w-8 h-8 bg-[#B0F6FF] rounded-full'></div>
-            <h2 className='text-xl'>Admin</h2>
+            <h2 className='text-xl'>{user?.name}</h2>
             <button
               onClick={() => {
                 setShowDropDown(prev => !prev);

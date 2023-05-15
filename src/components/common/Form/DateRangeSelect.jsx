@@ -15,6 +15,7 @@ const DateRangeSelect = ({ startDate, endDate, setEndDate, setStartDate }) => {
     <div className='relative'>
       <ReactDatePicker
         placeholderText='Select a date Range'
+        dateFormat='dd/MM/yy'
         selectsRange={true}
         startDate={startDate}
         endDate={endDate}

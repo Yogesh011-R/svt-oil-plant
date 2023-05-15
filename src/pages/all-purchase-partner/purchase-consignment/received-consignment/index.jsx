@@ -329,6 +329,7 @@ const ReceivedConsignment = () => {
               )}
             </>
           }
+          placeholder='Search based on billNo...'
         />
         <div>{component}</div>
       </section>

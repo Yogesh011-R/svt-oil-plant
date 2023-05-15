@@ -297,6 +297,7 @@ const PurchaseSoudha = () => {
             },
             filename: 'Purchase Soudha Partners.csv',
           }}
+          placeholder='Search based on Name...'
         />
 
         <div>{component}</div>

@@ -39,6 +39,7 @@ const TableHeader = ({
   setEndDate,
   setStartDate,
   detailInfo,
+  placeholder,
 }) => {
   const { saveAsCsv } = useJsonToCsv();
   const dispatch = useDispatch();
@@ -224,6 +225,7 @@ const TableHeader = ({
               pageIndex={pageIndex}
               value={searchValue}
               setValue={setSearchValue}
+              placeholder={placeholder}
             />
             {dateFilter && (
               <DateRangeSelect

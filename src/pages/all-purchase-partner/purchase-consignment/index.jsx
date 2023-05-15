@@ -72,7 +72,16 @@ const PurchaseSoudha = () => {
       Header: 'Rate',
       accessor: 'rate',
       Cell: ({ row }) => {
-        return <span>₹{row.original.rate}</span>;
+        return (
+          <span>
+            {' '}
+            {row.original.status === 'completed' ? (
+              <div>₹0</div>
+            ) : (
+              <div>₹{row.original.rate}</div>
+            )}
+          </span>
+        );
       },
     },
     {
@@ -242,6 +251,38 @@ const PurchaseSoudha = () => {
             })[0]?.totalInfo,
           };
         });
+        // console.log(
+        // '🚀 ~ file: index.jsx:245 ~ newResult ~ data.consignments.results:',
+        // data.consignments.results
+        // );
+
+        const bookedQuantityPlusRate = data.consignments.results.map(
+          (item, idx) => {
+            if (item.status === 'completed') return 0;
+
+            const rate = (item.bookedQuantity * item.rate) / 10;
+
+            return rate;
+          }
+        );
+
+        const bookedQuantity = data.consignments.results.map((item, idx) => {
+          if (item.status === 'completed') return 0;
+
+          return item.bookedQuantity;
+        });
+        let bookedQuantityPlusRateTotal = 0;
+
+        let bookedQuantityTotal = 0;
+
+        for (let i = 0; i < bookedQuantityPlusRate.length; i++) {
+          bookedQuantityPlusRateTotal += bookedQuantityPlusRate[i];
+        }
+        for (let i = 0; i < bookedQuantity.length; i++) {
+          bookedQuantityTotal += bookedQuantity[i];
+        }
+
+        const averageRate = bookedQuantityPlusRateTotal / bookedQuantityTotal;
 
         const totalFu = () => {
           let differenceAmount = 0;
@@ -262,6 +303,7 @@ const PurchaseSoudha = () => {
           totalInfo: {
             ...data.totalInfo,
             ...totalFu(),
+            averageRate,
           },
         };
       },
@@ -389,10 +431,7 @@ const PurchaseSoudha = () => {
                       name: 'Average rate',
                       value:
                         '₹' +
-                        parseFloat(
-                          data?.totalInfo?.averageRate /
-                            data?.totalInfo?.totalBookQuantity || 0
-                        ).toFixed(2),
+                        parseFloat(data?.totalInfo?.averageRate).toFixed(2),
                     },
                     {
                       id: 3,
@@ -409,6 +448,7 @@ const PurchaseSoudha = () => {
               )}
             </>
           }
+          placeholder='Search based on oilType...'
         />
         <div>{component}</div>
       </section>
