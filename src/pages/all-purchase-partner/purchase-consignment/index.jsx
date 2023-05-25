@@ -251,10 +251,6 @@ const PurchaseSoudha = () => {
             })[0]?.totalInfo,
           };
         });
-        // console.log(
-        // '🚀 ~ file: index.jsx:245 ~ newResult ~ data.consignments.results:',
-        // data.consignments.results
-        // );
 
         const bookedQuantityPlusRate = data.consignments.results.map(
           (item, idx) => {

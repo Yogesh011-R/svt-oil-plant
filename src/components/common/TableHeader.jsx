@@ -80,7 +80,10 @@ const TableHeader = ({
       dispatch(
         addToast({
           kind: ERROR,
-          msg: message,
+          msg:
+            message.type === 'OAuthException'
+              ? 'Token Expired, Please Refresh the Token'
+              : message.message,
         })
       );
     }

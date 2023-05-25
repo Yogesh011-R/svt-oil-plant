@@ -266,7 +266,6 @@ export const downloadAsExcel = (data, fileName, fields, isWhatsapp) => {
     // uploadToS3(fdata, 'wbout');
 
     for (var pair of fdata.entries()) {
-      // console.log('🚀 ~ file: helper.js:262 ~ downloadAsExcel ~ pair:',  pair);
       return uploadToS3(pair[1]);
     }
   } else {
