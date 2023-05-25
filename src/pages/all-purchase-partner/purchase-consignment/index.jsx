@@ -75,11 +75,11 @@ const PurchaseSoudha = () => {
         return (
           <span>
             {' '}
-            {row.original.status === 'completed' ? (
+            {/* {row.original.status === 'completed' ? (
               <div>₹0</div>
             ) : (
-              <div>₹{row.original.rate}</div>
-            )}
+              )} */}
+            <div>₹{row.original.rate}</div>
           </span>
         );
       },

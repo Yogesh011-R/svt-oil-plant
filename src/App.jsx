@@ -3,7 +3,6 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AuthLayout from './layout/AuthLayout';
 import DefaultLayout from './layout/DefaultLayout';
 import PrivateRoute from './PrivateRoute';
-import { QueryClient, QueryClientProvider } from 'react-query';
 import axios from 'axios';
 import store from './redux/app/store';
 import { ToastContainer, Flip } from 'react-toastify';
@@ -164,13 +163,6 @@ axios.interceptors.response.use(
 // );
 
 function App() {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 5000,
-      },
-    },
-  });
   return (
     <>
       <Toast />
